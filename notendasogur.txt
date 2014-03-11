@@ -1,0 +1,33 @@
+!!! Notendasögur !!!
+
+
+notandi á að geta spilað venjulegan kapal, sem fylgir hefðbundum reglum reglum.
+
+notandi á að geta dregið spil milli bunka.
+
+notandi á að geta séð, mjög greinilega, hvað spil eru hvað.
+
+notandi á að geta séð hvort spil snúi upp eða niður.
+
+notandi á að geta séð þegar hann hefur sigrað.
+
+notandi á að geta spilað endalaust (ef hann neitar að sætta sig við tap).
+
+notandi á að geta flétt í bunkanum.
+
+notandi á að geta nálgast upplýsingar um reglur leiksins.
+
+notandi á að geta endurræst (gefið upp á nýtt) kapalinn hvenær sem er.
+
+notandi á að geta séð hversu langan tíma hann hefur spilað.
+
+notandi á að geta séð hversu mörg stig hann er með.
+
+notandi á að geta séð vinninghlutfall sitt.
+
+notandi á að geta séð highscore töflu.
+
+notandi á að geta þurkað út highscortöflu og vinningshlutfalls útreikninga.
+
+notandi á að geta notið þess að horfa á myndir af fallegu fólki á meðan á leiknum stendur.
+
