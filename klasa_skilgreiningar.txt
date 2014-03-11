@@ -1,0 +1,19 @@
+Klasi fyrir spil - verður að vera hægt að skilgreina hvort það snúi upp eða niður.
+                   inniheldur upplýsingar um sort, númer
+                   innihedur slóð á mynd
+                   (staðsetningar hnit)
+
+klasi fyrir stokka - geymsluaðferð, 
+                     stokkur sem við drögum úr, spilin sem við drógum og  geymum röðuðu bunaknna (ás, tvist .....) 
+                     sést ekki undir fremsta spil.
+                     inniheldur upplýsingar um þau spil sem eru í stokknum.
+
+kalsi fyrir bunka - geymsluaðferð, 
+                    inniheldur smá offset þannig að spilin fyrir aftan það fremsta sjáist.
+                    (meira offset ef spilin undir snúa upp)
+
+klasi fyrir gui - sér um að teikna leiksvæðið
+
+klasi fyrir leikinn - sér um að keyra game-loop
+                      tekur tímann og telur stig
+                      vistar upplýsingar um tíma og stig í skrá
