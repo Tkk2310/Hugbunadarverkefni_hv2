@@ -138,7 +138,7 @@ class bunki:
             self.setja_a(Spil('Lauf',13))
             self.draugur = True
 
-    def taka_draug:
+    def taka_draug(self):
         if self.draugur:
             self.spil_i_bunka = []
             self.draugur = False
