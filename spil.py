@@ -180,7 +180,7 @@ def s2_s1():
     spil[0].snua()
     s1.setja_a(spil)
 
-faera = True
+faera = True 
 
 while 1:
     for event in pg.event.get():
