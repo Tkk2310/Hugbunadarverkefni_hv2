@@ -131,11 +131,14 @@ class bunki:
 
     def athuga(self,hnit):
         if not self.tomur():
-            yhnit = self.stadsetning[0] + len(self.spil_i_bunka) * (18-len(self.spil_i_bunka))
-            for i in self.spil_i_bunka:
-                kassar = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed())) 
+            yhnit = self.stadsetning[0] + ((len(self.spil_i_bunka)-1) * (self.skekkja + (18-len(self.spil_i_bunka))))
+            ofugt = self.spil_i_bunka[::-1]
+            for i in ofugt:
+                kassi = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed()) 
                 yhnit -= self.skekkja + (18-len(self.spil_i_bunka))
-
+                print(yhnit)
+                if kassi.collidepoint(hnit):
+                    return i
 
         return False
 
