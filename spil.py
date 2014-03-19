@@ -64,7 +64,7 @@ class Stokkur:
         else:
             self.spil_i_stokk.append(spil)
 
-    def taka_efsta(self):
+    def taka_efsta(self, spil):
         if not self.tomur():
             return [self.spil_i_stokk.pop()]
 
@@ -145,11 +145,12 @@ class bunki:
                 yhnit -= self.skekkja + (18-len(self.spil_i_bunka))
                 if kassi.collidepoint(hnit):
                     return i
-
         return False
 
+    def skila_fyrsta(self):
+        if not self.tomur():
+            return self.spil_i_bunka[0]
 
-    
     def stadur(self):
         return self.stadsetning
 
