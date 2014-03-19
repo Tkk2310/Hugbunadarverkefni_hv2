@@ -9,9 +9,9 @@ class Spil:
         self.gildi = gildi
         self.snyr_upp = snyr
         self.bakhlid = pg.image.load('bakhlid.png')
-        self.spila_breidd = 73
-        self.spila_haed = 95
-        self.kantur_toppur = 3
+        self.spila_breidd = 72
+        self.spila_haed = 96
+        self.kantur_toppur = 0
 
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
 
@@ -26,9 +26,9 @@ class Spil:
         return self.framhlid
 
     def fa_mitt_spil(self, sort, gildi):
-        sortir = {'Lauf' : 0,'Spadi': 1 ,'Hjarta' : 2, 'Tigull' : 3}
+        sortir = {'Lauf' : 0,'Spadi': 1 ,'Hjarta' : 2, 'Tigull' : 3, 'Auka' : 4}
         rod =  sortir[sort] * (self.spila_haed + self.kantur_toppur)
-        dalkur = (gildi-1) * self.spila_breidd
+        dalkur = (gildi-1) * self.spila_breidd-1
 
         return (rod,dalkur)
 
@@ -55,7 +55,7 @@ class Geymsla:
 
     def setja_draug(self):
         if self.tomur():
-            self.setja_a(Spil('Lauf',13,True))
+            self.setja_a(Spil('Auka',6,True))
             self.draugur = True
 
     def taka_draug(self):
@@ -170,7 +170,7 @@ class Leikur:
         self.klukka = pg.time.Clock()
         self.gluggi = pg.display.set_mode((800,500))
         self.gluggi.fill((0,0,0))
-        self.mynd = pg.image.load('Spil.png').convert()
+        self.mynd = pg.image.load('mynd.png').convert()
         self.utbytta_spilum()
 
     def utbytta_spilum(self):

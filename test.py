@@ -8,9 +8,9 @@ class test(unittest.TestCase):
         self.assertEqual(tilraunadyr.hvernig_snyrdu(),True)
         tilraunadyr.snua()
         self.assertEqual(tilraunadyr.hvernig_snyrdu(),False)
-        self.assertEqual(tilraunadyr.fa_spil(), (196, 0))
-        self.assertEqual(tilraunadyr.haed(), 95)
-        self.assertEqual(tilraunadyr.breidd(), 73)
+        self.assertEqual(tilraunadyr.fa_spil(), (192, -1))
+        self.assertEqual(tilraunadyr.haed(), 96)
+        self.assertEqual(tilraunadyr.breidd(), 72)
 
     def test_bunka(self):
         tilraunadyr = kapall.Bunki(200,200)
