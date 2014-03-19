@@ -9,7 +9,7 @@ class Spil:
         self.sort = sort
         self.gildi = gildi
         self.snyr_upp = snyr
-        self.bakhlid = None
+        self.bakhlid = pg.image.load('bakhlid.png')
         self.spila_breidd = 73
         self.spila_haed = 95
         self.kantur_toppur = 3
@@ -39,6 +39,16 @@ class Spil:
     def haed(self):
         return self.spila_haed
 
+    def skila_spili(self):
+        return (self.sort,self.gildi)
+
+    def hvernig_snyrdu(self):
+        return self.snyr_upp
+
+    def fa_bakhlid(self):
+        return self.bakhlid
+
+
 
 
 
@@ -47,19 +57,30 @@ class Stokkur:
     def __init__(self, xHnit, yHnit):
         self.stadsetning = (xHnit, yHnit)
         self.spil_i_stokk = []
+        self.test = 0
 
-    def baeta_vid(self, spil):
-        self.spil_i_stokk.append(spil)
+    def setja_a(self, spil):
+        if type(spil)==list:
+            self.spil_i_stokk += spil
+        else:
+            self.spil_i_stokk.append(spil)
 
     def taka_efsta(self):
-        return self.spil_i_stokk.pop()
+        if not self.tomur():
+            return [self.spil_i_stokk.pop()]
 
     def teikna(self, skjar, mynd):
         if not self.tomur():
+            print(self.test)
             efst = self.spil_i_stokk[-1]
-            hnit = efst.fa_spil()
-            kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
-            skjar.blit(mynd, self.stadsetning, (hnit[1], hnit[0], efst.breidd(), efst.haed()))
+            if efst.hvernig_snyrdu():
+                hnit = efst.fa_spil()
+                kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
+                skjar.blit(mynd, kassi, (hnit[1], hnit[0], efst.breidd(), efst.haed()))
+            else:
+                kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
+                skjar.blit(efst.fa_bakhlid(), kassi)
+
 
     def tomur(self):
         return len(self.spil_i_stokk) == 0
@@ -74,11 +95,22 @@ class bunki:
 
     def __init__(self, xhnit, yhnit):
         self.stadsetning = (xhnit, yhnit)
-        self.skekkja = 30
         self.spil_i_bunka = []
+        self.skekkja = 10
 
-    def setja_a_bunka(self, spil):
-        self.spil_i_bunka.append(spil)
+    def setja_a(self, spil):
+        if spil:
+            if type(spil)==list:
+                self.spil_i_bunka += spil
+            else:
+                self.spil_i_bunka.append(spil)
+
+    def taka_af(self, spil):
+        if spil:
+            hvar = self.spil_i_bunka.index(spil)
+            losun = self.spil_i_bunka[hvar:]
+            self.spil_i_bunka = self.spil_i_bunka[:hvar]
+            return losun
 
     def tomur(self):
         return len(self.spil_i_bunka) == 0
@@ -87,17 +119,32 @@ class bunki:
         if not self.tomur():
             yhnit = self.stadsetning[0]
             for i in self.spil_i_bunka:
+                if i.hvernig_snyrdu():
+                    kassi = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed())
+                    yhnit += self.skekkja + (18-len(self.spil_i_bunka))
+                    hnit = i.fa_spil()
+                    skjar.blit(mynd,kassi,(hnit[1], hnit[0], i.breidd(), i.haed()))
+                else:
+                    kassi = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed())
+                    yhnit += self.skekkja + (18-len(self.spil_i_bunka))
+                    hnit = i.fa_spil()
+                    skjar.blit(i.fa_bakhlid(),kassi)
+
+
+    def athuga(self,hnit):
+        if not self.tomur():
+            yhnit = self.stadsetning[0]
+            for i in self.spil_i_bunka:
                 kassi = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed())
-                yhnit += self.skekkja
-                hnit = i.fa_spil()
-                skjar.blit(mynd,kassi,(hnit[1], hnit[0], i.breidd(), i.haed()))
+                yhnit += self.skekkja + (18-len(self.spil_i_bunka))
+                if kassi.collidepoint(hnit):
+                    return i
+        return False
 
 
-
-
-
-
-
+    
+    def stadur(self):
+        return self.stadsetning
 
 
 
@@ -113,27 +160,25 @@ s1 = Stokkur(300,100)
 
 s2 = Stokkur(500,100)
 
-b = bunki(300,200)
+b = bunki(100,700)
+b2 = bunki(100,800)
 
-spil1 = Spil('Hjarta', 1, True)
-spil3 = Spil('Hjarta', 2, True)
-spil2 = Spil('Spadi', 1, True)
-spil4 = Spil('Tigull', 13, True)
+prufa = pg.Rect(500,500,100,100)
 
+for i in range(13):
+    s = Spil('Hjarta', i+1, False)
+    s1.setja_a(s)
 
-s1.baeta_vid(spil1)
-s1.baeta_vid(spil3)
-
-s2.baeta_vid(spil4)
-s2.baeta_vid(spil2)
 
 def s1_s2():
     spil = s1.taka_efsta()
-    s2.baeta_vid(spil)
+    spil[0].snua()
+    s2.setja_a(spil)
 
 def s2_s1():
     spil = s2.taka_efsta()
-    s1.baeta_vid(spil)
+    spil[0].snua()
+    s1.setja_a(spil)
 
 faera = True
 
@@ -150,12 +195,15 @@ while 1:
                 s2_s1()
                 if s2.tomur():
                     faera = True
-        elif event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
+        elif event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
             spil = s1.taka_efsta()
-            b.setja_a_bunka(spil)
-            #h = s2.stadur()
-            #s2.flytja((h[0]+20, h[1]+100))
-            
+            spil[0].snua()
+            b.setja_a(spil)
+
+        elif event.type == pg.KEYDOWN and event.key == pg.K_a:
+            spil = b.athuga((750,250))
+            temp = b.taka_af(spil)
+            b2.setja_a(temp)
             
 
 
@@ -163,12 +211,5 @@ while 1:
     s1.teikna(screen, mynd)
     s2.teikna(screen, mynd)
     b.teikna(screen,mynd)
-
+    b2.teikna(screen,mynd)
     pg.display.flip()
-
-
-
-
-
-
-
