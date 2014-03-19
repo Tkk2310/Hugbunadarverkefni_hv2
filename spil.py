@@ -12,7 +12,7 @@ class Spil:
         self.bakhlid = pg.image.load('bakhlid.png')
         self.spila_breidd = 73
         self.spila_haed = 95
-        self.kantur_toppur = 3
+        self.kantur_toppur = 4
 
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
 
@@ -47,9 +47,6 @@ class Spil:
 
     def fa_bakhlid(self):
         return self.bakhlid
-
-
-
 
 
 class Stokkur:
@@ -102,6 +99,7 @@ class bunki:
         self.stadsetning = (xhnit, yhnit)
         self.spil_i_bunka = []
         self.skekkja = 10
+        self.draugur = False
 
     def setja_a(self, spil):
         if spil:
@@ -134,6 +132,18 @@ class bunki:
                     yhnit += self.skekkja + (18-len(self.spil_i_bunka))
                     hnit = i.fa_spil()
                     skjar.blit(i.fa_bakhlid(),kassi)
+
+    def setja_draug(self):
+        if not self.tomur():
+            self.setja_a(Spil('Lauf',13))
+            self.draugur = True
+
+    def taka_draug:
+        if self.draugur:
+            self.spil_i_bunka = []
+            self.draugur = False
+
+
 
 
     def athuga(self,hnit):
