@@ -1,4 +1,5 @@
 import pygame as pg
+import random
 
 class Spil:
 
@@ -58,7 +59,7 @@ class Geymsla:
             self.draugur = True
 
     def taka_draug(self):
-        if self.draugur:
+        if self.draugur and len(self.spil_i_lista) == 1:
             self.spil_i_lista = []
             self.draugur = False
 
@@ -73,7 +74,7 @@ class Geymsla:
                 self.spil_i_lista.append(spil)
 
     def flytja(self, hnit):
-        self.stadsetning = hnit[1],hnit[0]
+        self.stadsetning = hnit
 
 
 
@@ -112,9 +113,8 @@ class Bunki(Geymsla):
     def __init__(self, xhnit, yhnit):
         self.stadsetning = (xhnit, yhnit)
         self.spil_i_lista = []
-        self.skekkja = 10
+        self.skekkja = 12
         self.draugur = False
-
 
     def taka_af(self, spil):
         if spil:
@@ -123,31 +123,27 @@ class Bunki(Geymsla):
             self.spil_i_lista = self.spil_i_lista[:hvar]
             return losun
 
-
     def teikna(self, skjar, mynd):
         if not self.tomur():
-            yhnit = self.stadsetning[0]
+            yhnit = self.stadsetning[1]
             for i in self.spil_i_lista:
                 if i.hvernig_snyrdu():
-                    kassi = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed())
+                    kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
                     yhnit += self.skekkja + (18-len(self.spil_i_lista))
                     hnit = i.fa_spil()
                     skjar.blit(mynd,kassi,(hnit[1], hnit[0], i.breidd(), i.haed()))
                 else:
-                    kassi = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed())
+                    kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
                     yhnit += self.skekkja + (18-len(self.spil_i_lista))
                     hnit = i.fa_spil()
                     skjar.blit(i.fa_bakhlid(),kassi)
 
-
-
-
     def athuga(self,hnit):
         if not self.tomur():
-            yhnit = self.stadsetning[0] + ((len(self.spil_i_lista)-1) * (self.skekkja + (18-len(self.spil_i_lista))))
+            yhnit = self.stadsetning[1] + ((len(self.spil_i_lista)-1) * (self.skekkja + (18-len(self.spil_i_lista))))
             ofugt = self.spil_i_lista[::-1]
             for i in ofugt:
-                kassi = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed())
+                kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
                 yhnit -= self.skekkja + (18-len(self.spil_i_lista))
                 if kassi.collidepoint(hnit):
                     return i
@@ -172,33 +168,42 @@ class Leikur:
         self.spilandi = True
         self.halda_nidri = False
         self.klukka = pg.time.Clock()
-        self.gluggi = pg.display.set_mode((500,500))
+        self.gluggi = pg.display.set_mode((800,500))
         self.gluggi.fill((0,0,0))
         self.mynd = pg.image.load('Spil.png').convert()
-        self.gera_stokka()
+        self.utbytta_spilum()
 
-    def gera_stokka(self):
-        self.stokkar = (
-                Stokkur(0,0),
-                Stokkur(100,0)
-                )
+    def utbytta_spilum(self):
+        spil = [Spil(tegund,numer, False) for tegund in ['Hjarta','Spadi','Tigull','Lauf'] for numer in range(1,14)]
+        random.shuffle(spil)
         self.bunkar = (
-                Bunki(200,100),
-                Bunki(300,400)
+                Bunki(10,130),
+                Bunki(110,130),
+                Bunki(210,130),
+                Bunki(310,130),
+                Bunki(410,130),
+                Bunki(510,130),
+                Bunki(610,130)
                 )
+        self.stokkar = (
+                Stokkur(10,10),
+                Stokkur(110,10),
+                Stokkur(310,10),
+                Stokkur(410,10),
+                Stokkur(510,10),
+                Stokkur(610,10)
+                )
+        for i in range(1,7):
+            for j in range(i):
+                self.bunkar[i].setja_a(spil.pop())
+        for k in self.bunkar:
+            snu = spil.pop()
+            snu.snua()
+            k.setja_a(snu)
+        self.stokkar[0].setja_a(spil)
+        for l in self.stokkar:
+            l.setja_draug()
         self.hond = Bunki(0,0)
-        self.stokkar[0].setja_a(Spil('Hjarta', 1, False))
-        self.stokkar[0].setja_a(Spil('Hjarta', 2, True))
-        self.stokkar[1].setja_a(Spil('Hjarta', 3, True))
-        self.stokkar[1].setja_a(Spil('Hjarta', 4, True))
-        #self.bunkar[0].setja_a(Spil('Hjarta', 5, True))
-        #self.bunkar[0].setja_a(Spil('Hjarta', 6, True))
-        #self.bunkar[0].setja_a(Spil('Spadi', 5, True))
-        self.bunkar[0].setja_a(Spil('Spadi', 6, True))
-        self.bunkar[1].setja_a(Spil('Tigull', 7, True))
-        self.bunkar[1].setja_a(Spil('Tigull', 8, True))
-        self.bunkar[1].setja_a(Spil('Lauf', 7, True))
-        self.bunkar[1].setja_a(Spil('Lauf', 8, True))
 
     def teikna_stokka(self):
         for stk in self.stokkar:
@@ -253,10 +258,10 @@ class Leikur:
 
     def leikhringur(self):
         while self.spilandi:
-            self.gluggi.fill((0,0,0))
+            self.gluggi.fill((0,255,0))
             self.teikna_stokka()
             self.samskipti()
-            #self.klukka.tick(200)
+            self.klukka.tick(200)
             pg.display.flip()
 
 Leikur()
