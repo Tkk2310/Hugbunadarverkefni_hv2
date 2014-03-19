@@ -47,25 +47,50 @@ class Spil:
         return self.bakhlid
 
 
-class Stokkur:
+class Geymsla:
+
+    def tomur(self):
+        return len(self.spil_i_lista)==0
+
+    def setja_draug(self):
+        if self.tomur():
+            self.setja_a(Spil('Lauf',13,True))
+            self.draugur = True
+
+    def taka_draug(self):
+        if self.draugur:
+            self.spil_i_lista = []
+            self.draugur = False
+
+    def draugur_lifandi(self):
+        return self.draugur
+
+    def setja_a(self, spil):
+        if spil:
+            if type(spil)==list:
+                self.spil_i_lista += spil
+            else:
+                self.spil_i_lista.append(spil)
+
+    def flytja(self, hnit):
+        self.stadsetning = hnit[1],hnit[0]
+
+
+
+class Stokkur(Geymsla):
 
     def __init__(self, xHnit, yHnit):
         self.stadsetning = (xHnit, yHnit)
-        self.spil_i_stokk = []
+        self.spil_i_lista = []
+        self.draugur = False
 
-    def setja_a(self, spil):
-        if type(spil)==list:
-            self.spil_i_stokk += spil
-        else:
-            self.spil_i_stokk.append(spil)
-
-    def taka_efsta(self, spil):
+    def taka_af(self, spil):
         if not self.tomur():
-            return [self.spil_i_stokk.pop()]
+            return [self.spil_i_lista.pop()]
 
     def teikna(self, skjar, mynd):
         if not self.tomur():
-            efst = self.spil_i_stokk[-1]
+            efst = self.spil_i_lista[-1]
             if efst.hvernig_snyrdu():
                 hnit = efst.fa_spil()
                 kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
@@ -76,97 +101,62 @@ class Stokkur:
 
     def athuga(self,hnit):
         if not self.tomur():
-            efst = self.spil_i_stokk[-1]
+            efst = self.spil_i_lista[-1]
             kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
             if kassi.collidepoint(hnit):
                 return efst
 
 
-    def tomur(self):
-        return len(self.spil_i_stokk) == 0
-
-    def flytja(self, hnit):
-        self.stadsetning = hnit[1],hnit[0]
-
-    def stadur(self):
-        return self.stadsetning
-
-class Bunki:
+class Bunki(Geymsla):
 
     def __init__(self, xhnit, yhnit):
         self.stadsetning = (xhnit, yhnit)
-        self.spil_i_bunka = []
+        self.spil_i_lista = []
         self.skekkja = 10
         self.draugur = False
 
-    def flytja(self, hnit):
-        self.stadsetning = hnit[1],hnit[0]
-
-    def setja_a(self, spil):
-        if spil:
-            if type(spil)==list:
-                self.spil_i_bunka += spil
-            else:
-                self.spil_i_bunka.append(spil)
 
     def taka_af(self, spil):
         if spil:
-            hvar = self.spil_i_bunka.index(spil)
-            losun = self.spil_i_bunka[hvar:]
-            self.spil_i_bunka = self.spil_i_bunka[:hvar]
+            hvar = self.spil_i_lista.index(spil)
+            losun = self.spil_i_lista[hvar:]
+            self.spil_i_lista = self.spil_i_lista[:hvar]
             return losun
 
-    def tomur(self):
-        return len(self.spil_i_bunka) == 0
 
     def teikna(self, skjar, mynd):
         if not self.tomur():
             yhnit = self.stadsetning[0]
-            for i in self.spil_i_bunka:
+            for i in self.spil_i_lista:
                 if i.hvernig_snyrdu():
                     kassi = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed())
-                    yhnit += self.skekkja + (18-len(self.spil_i_bunka))
+                    yhnit += self.skekkja + (18-len(self.spil_i_lista))
                     hnit = i.fa_spil()
                     skjar.blit(mynd,kassi,(hnit[1], hnit[0], i.breidd(), i.haed()))
                 else:
                     kassi = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed())
-                    yhnit += self.skekkja + (18-len(self.spil_i_bunka))
+                    yhnit += self.skekkja + (18-len(self.spil_i_lista))
                     hnit = i.fa_spil()
                     skjar.blit(i.fa_bakhlid(),kassi)
-
-    def setja_draug(self):
-        if self.tomur():
-            self.setja_a(Spil('Lauf',13,True))
-            self.draugur = True
-
-    def taka_draug(self):
-        if self.draugur:
-            self.spil_i_bunka = []
-            self.draugur = False
-
-    def draugur_lifandi(self):
-        return self.draugur
 
 
 
 
     def athuga(self,hnit):
         if not self.tomur():
-            yhnit = self.stadsetning[0] + ((len(self.spil_i_bunka)-1) * (self.skekkja + (18-len(self.spil_i_bunka))))
-            ofugt = self.spil_i_bunka[::-1]
+            yhnit = self.stadsetning[0] + ((len(self.spil_i_lista)-1) * (self.skekkja + (18-len(self.spil_i_lista))))
+            ofugt = self.spil_i_lista[::-1]
             for i in ofugt:
                 kassi = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed())
-                yhnit -= self.skekkja + (18-len(self.spil_i_bunka))
+                yhnit -= self.skekkja + (18-len(self.spil_i_lista))
                 if kassi.collidepoint(hnit):
                     return i
         return False
 
     def skila_fyrsta(self):
         if not self.tomur():
-            return self.spil_i_bunka[0]
+            return self.spil_i_lista[0]
 
-    def stadur(self):
-        return self.stadsetning
 
 
 class Vidmot:
@@ -266,7 +256,7 @@ class Leikur:
             self.gluggi.fill((0,0,0))
             self.teikna_stokka()
             self.samskipti()
-            self.klukka.tick(200)
+            #self.klukka.tick(200)
             pg.display.flip()
 
 Leikur()

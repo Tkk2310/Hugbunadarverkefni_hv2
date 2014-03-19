@@ -93,7 +93,7 @@ class Stokkur:
     def stadur(self):
         return self.stadsetning
 
-class bunki:
+class Bunki:
 
     def __init__(self, xhnit, yhnit):
         self.stadsetning = (xhnit, yhnit)
@@ -134,8 +134,8 @@ class bunki:
                     skjar.blit(i.fa_bakhlid(),kassi)
 
     def setja_draug(self):
-        if not self.tomur():
-            self.setja_a(Spil('Lauf',13))
+        if self.tomur():
+            self.setja_a(Spil('Lauf',13, True))
             self.draugur = True
 
     def taka_draug(self):
@@ -143,8 +143,12 @@ class bunki:
             self.spil_i_bunka = []
             self.draugur = False
 
+    def draugur_lifandi(self):
+        return self.draugur
 
 
+    def flytja(self):
+        self.stadsetning = hnit[1],hnit[0]
 
     def athuga(self,hnit):
         if not self.tomur():
@@ -155,6 +159,7 @@ class bunki:
                 yhnit -= self.skekkja + (18-len(self.spil_i_bunka))
                 if kassi.collidepoint(hnit):
                     return i
+            
         return False
 
     def skila_fyrsta(self):
@@ -178,8 +183,8 @@ s1 = Stokkur(300,100)
 
 s2 = Stokkur(500,100)
 
-b = bunki(100,700)
-b2 = bunki(100,800)
+b = Bunki(100,700)
+b2 = Bunki(100,800)
 
 prufa = pg.Rect(500,500,100,100)
 
