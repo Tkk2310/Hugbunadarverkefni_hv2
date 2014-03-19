@@ -259,4 +259,5 @@ class Leikur:
             #self.klukka.tick(200)
             pg.display.flip()
 
-Leikur()
+if __name__ == '__main__':
+    Leikur()
