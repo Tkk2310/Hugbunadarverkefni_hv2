@@ -20,7 +20,7 @@ class Spil:
     def snua(self):
         if self.snyr_upp == False:
             self.snyr_upp = True
-        else:
+        else:  
             self.snyr_upp = False
 
     def fa_spil(self):
@@ -57,7 +57,6 @@ class Stokkur:
     def __init__(self, xHnit, yHnit):
         self.stadsetning = (xHnit, yHnit)
         self.spil_i_stokk = []
-        self.test = 0
 
     def setja_a(self, spil):
         if type(spil)==list:
@@ -71,7 +70,6 @@ class Stokkur:
 
     def teikna(self, skjar, mynd):
         if not self.tomur():
-            print(self.test)
             efst = self.spil_i_stokk[-1]
             if efst.hvernig_snyrdu():
                 hnit = efst.fa_spil()
@@ -133,12 +131,12 @@ class bunki:
 
     def athuga(self,hnit):
         if not self.tomur():
-            yhnit = self.stadsetning[0]
+            yhnit = self.stadsetning[0] + len(self.spil_i_bunka) * (18-len(self.spil_i_bunka))
             for i in self.spil_i_bunka:
-                kassi = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed())
-                yhnit += self.skekkja + (18-len(self.spil_i_bunka))
-                if kassi.collidepoint(hnit):
-                    return i
+                kassar = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed())) 
+                yhnit -= self.skekkja + (18-len(self.spil_i_bunka))
+
+
         return False
 
 
@@ -187,14 +185,18 @@ while 1:
         if event.type == pg.QUIT: 
             sys.exit()
         elif event.type == pg.MOUSEBUTTONDOWN:
-            if faera:
-                s1_s2()
-                if s1.tomur():
-                    faera = False
-            else:
-                s2_s1()
-                if s2.tomur():
-                    faera = True
+            spil = b.athuga(pg.mouse.get_pos())
+            temp = b.taka_af(spil)
+            b2.setja_a(temp)
+#            if faera:
+#                s1_s2()
+#                if s1.tomur():
+#                    faera = False
+#            else:
+#                s2_s1()
+#                if s2.tomur():
+#                    faera = True
+
         elif event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
             spil = s1.taka_efsta()
             spil[0].snua()
