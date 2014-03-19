@@ -79,6 +79,13 @@ class Stokkur:
                 kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
                 skjar.blit(efst.fa_bakhlid(), kassi)
 
+    def athuga(self,hnit):
+        if not self.tomur():
+            efst = self.spil_i_stokk[-1]
+            kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
+            if kassi.collidepoint(hnit):
+                return efst
+
 
     def tomur(self):
         return len(self.spil_i_stokk) == 0
@@ -136,7 +143,6 @@ class bunki:
             for i in ofugt:
                 kassi = pg.Rect(self.stadsetning[1], yhnit , i.breidd(), i.haed()) 
                 yhnit -= self.skekkja + (18-len(self.spil_i_bunka))
-                print(yhnit)
                 if kassi.collidepoint(hnit):
                     return i
 
@@ -167,7 +173,7 @@ b2 = bunki(100,800)
 prufa = pg.Rect(500,500,100,100)
 
 for i in range(13):
-    s = Spil('Hjarta', i+1, False)
+    s = Spil('Hjarta', i+1, True)
     s1.setja_a(s)
 
 
@@ -188,8 +194,9 @@ while 1:
         if event.type == pg.QUIT: 
             sys.exit()
         elif event.type == pg.MOUSEBUTTONDOWN:
-            spil = b.athuga(pg.mouse.get_pos())
-            temp = b.taka_af(spil)
+            spil = s1.athuga(pg.mouse.get_pos())
+            temp = s1.taka_efsta()
+            temp[0].snua()
             b2.setja_a(temp)
 #            if faera:
 #                s1_s2()
