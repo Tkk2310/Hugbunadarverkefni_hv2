@@ -4,7 +4,6 @@ import random
 class Spil:
 
     def __init__(self,sort, gildi, snyr):
-
         self.sort = sort
         self.gildi = gildi
         self.snyr_upp = snyr
@@ -14,12 +13,12 @@ class Spil:
         self.bakhlid = self.fa_mitt_spil('Auka', 1)
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
 
-
     def snua(self):
         if self.snyr_upp == False:
             self.snyr_upp = True
         else:
             self.snyr_upp = False
+        return self
 
     def fa_spil(self):
         if self.snyr_upp:
@@ -31,7 +30,6 @@ class Spil:
         sortir = {'Lauf' : 0,'Spadi': 1 ,'Hjarta' : 2, 'Tigull' : 3, 'Auka' : 4}
         rod =  sortir[sort] * self.spila_haed
         dalkur = (gildi-1) * self.spila_breidd + (gildi-1)
-
         return (rod,dalkur)
 
     def breidd(self):
@@ -45,7 +43,6 @@ class Spil:
 
     def hvernig_snyrdu(self):
         return self.snyr_upp
-
 
 
 class Geymsla:
@@ -77,7 +74,6 @@ class Geymsla:
         self.stadsetning = hnit
 
 
-
 class Stokkur(Geymsla):
 
     def __init__(self, xHnit, yHnit):
@@ -102,6 +98,9 @@ class Stokkur(Geymsla):
             kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
             if kassi.collidepoint(hnit):
                 return efst
+
+    def snyr_efst_upp(self):
+        return True
 
 
 class Bunki(Geymsla):
@@ -128,7 +127,6 @@ class Bunki(Geymsla):
                 hnit = i.fa_spil()
                 skjar.blit(mynd,kassi,(hnit[1], hnit[0], i.breidd(), i.haed()))
 
-
     def athuga(self,hnit):
         if not self.tomur():
             yhnit = self.stadsetning[1] + ((len(self.spil_i_lista)-1) * (self.skekkja + (18-len(self.spil_i_lista))))
@@ -144,18 +142,80 @@ class Bunki(Geymsla):
         if not self.tomur():
             return self.spil_i_lista[0]
 
-    def nedst_ofugt():
-        return self.spil_i_lista[-1].hvernig_snyrdu():
+    def snyr_efst_upp(self):
+        return self.spil_i_lista[-1].hvernig_snyrdu()
 
-    def snua_nedsta():
+    def snua_efsta(self):
         self.spil_i_lista[-1].snua()
 
+
 class Reglur:
-    pass
-
-
-class Leikur:
     def __init__(self):
+        self.sidasta_spil = False
+
+    def klikka(self):
+        geymsla,spil = self.mus_yfir_spili()
+        if geymsla:
+            if self.hond.tomur():
+                if geymsla == self.stokkar[0]:
+                    self.sidasta_spil = False
+                    self.draga_nytt_spil()
+                elif not geymsla.snyr_efst_upp():
+                    geymsla.snua_efsta()
+                else:
+                    if geymsla == self.stokkar[1]:
+                        self.sidasta_spil = spil
+                    self.setja_a_hond(geymsla,spil)
+            else:
+                if geymsla == self.stokkar[0]:
+                    return
+                if geymsla == self.stokkar[1] and not self.sidasta_spil:
+                    return
+                self.taka_af_hond(geymsla,spil)
+                self.sidasta_spil = False
+
+    def draga_nytt_spil(self):
+        if not self.stokkar[0].draugur_lifandi():
+            if self.stokkar[1].draugur_lifandi():
+                self.stokkar[1].taka_draug()
+            self.stokkar[1].setja_a(self.stokkar[0].taka_af(None)[0].snua())
+            if self.stokkar[0].tomur():
+                self.stokkar[0].setja_draug()
+        else:
+            self.stokkar[0].taka_draug()
+            while not self.stokkar[1].tomur():
+                self.stokkar[0].setja_a(self.stokkar[1].taka_af(None)[0].snua())
+            self.stokkar[1].setja_draug()
+
+    def setja_a_hond(self,geymsla,spil):
+        if geymsla and not geymsla.draugur_lifandi():
+            mitt = geymsla.taka_af(spil)
+            self.hond.setja_a(mitt)
+            geymsla.setja_draug()
+
+    def taka_af_hond(self,geymsla,spil):
+        if geymsla:
+            geymsla.taka_draug()
+            fyrsta = self.hond.skila_fyrsta()
+            spil = self.hond.taka_af(fyrsta)
+            geymsla.setja_a(spil)
+
+    def mus_yfir_spili(self):
+        for stk in self.stokkar:
+            spil = stk.athuga(pg.mouse.get_pos())
+            if spil:
+                return stk,spil
+        for bnk in self.bunkar:
+            spil = bnk.athuga(pg.mouse.get_pos())
+            if spil:
+                return bnk,spil
+        return False,False
+
+
+class Leikur(Reglur):
+
+    def __init__(self):
+        Reglur.__init__(self)
         self.undirbua()
         self.leikhringur()
 
@@ -212,49 +272,16 @@ class Leikur:
         mus = pg.mouse.get_pos()
         for atburdur in pg.event.get():
             if atburdur.type == pg.MOUSEBUTTONDOWN:
-                self.halda_nidri = True
-                self.laga_hond()
-            if atburdur.type == pg.MOUSEBUTTONUP:
-                self.halda_nidri = False
+                self.klikka()
             self.hond.flytja((mus[0]-36,mus[1]-10))
-            if atburdur.type == pg.KEYDOWN and atburdur.key == pg.K_ESCAPE:
-                self.spilandi = False
-
-    def laga_hond(self):
-        if self.hond.tomur():
-            self.setja_a_hond()
-        else:
-            self.taka_af_hond()
-
-    def setja_a_hond(self):
-        bos,spil = self.mus_yfir_spili()
-        if bos and not bos.draugur_lifandi():
-            mitt = bos.taka_af(spil)
-            self.hond.setja_a(mitt)
-            bos.setja_draug()
-
-    def taka_af_hond(self):
-        bos,spil = self.mus_yfir_spili()
-        if bos:
-            bos.taka_draug()
-            fyrsta = self.hond.skila_fyrsta()
-            spil = self.hond.taka_af(fyrsta)
-            bos.setja_a(spil)
-
-    def mus_yfir_spili(self):
-        for stk in self.stokkar:
-            spil = stk.athuga(pg.mouse.get_pos())
-            if spil:
-                return stk,spil
-        for bnk in self.bunkar:
-            spil = bnk.athuga(pg.mouse.get_pos())
-            if spil:
-                return bnk,spil
-        return False,False
+            if (atburdur.type == pg.KEYDOWN and
+                atburdur.key == pg.K_ESCAPE or
+                atburdur.type == pg.QUIT):
+                    self.spilandi = False
 
     def leikhringur(self):
         while self.spilandi:
-            self.gluggi.fill((0,255,0))
+            self.gluggi.fill((0,150,0))
             self.teikna_stokka()
             self.samskipti()
             self.klukka.tick(200)
