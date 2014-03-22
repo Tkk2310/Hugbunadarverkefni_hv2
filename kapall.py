@@ -8,11 +8,10 @@ class Spil:
         self.sort = sort
         self.gildi = gildi
         self.snyr_upp = snyr
-        self.bakhlid = pg.image.load('bakhlid.png')
-        self.spila_breidd = 72
+        self.spila_breidd = 71
         self.spila_haed = 96
-        self.kantur_toppur = 0
 
+        self.bakhlid = self.fa_mitt_spil('Auka', 1)
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
 
 
@@ -23,12 +22,15 @@ class Spil:
             self.snyr_upp = False
 
     def fa_spil(self):
-        return self.framhlid
+        if self.snyr_upp:
+            return self.framhlid
+        else:
+            return self.bakhlid
 
     def fa_mitt_spil(self, sort, gildi):
         sortir = {'Lauf' : 0,'Spadi': 1 ,'Hjarta' : 2, 'Tigull' : 3, 'Auka' : 4}
-        rod =  sortir[sort] * (self.spila_haed + self.kantur_toppur)
-        dalkur = (gildi-1) * self.spila_breidd-1
+        rod =  sortir[sort] * self.spila_haed
+        dalkur = (gildi-1) * self.spila_breidd + (gildi-1)
 
         return (rod,dalkur)
 
@@ -44,8 +46,6 @@ class Spil:
     def hvernig_snyrdu(self):
         return self.snyr_upp
 
-    def fa_bakhlid(self):
-        return self.bakhlid
 
 
 class Geymsla:
@@ -92,13 +92,9 @@ class Stokkur(Geymsla):
     def teikna(self, skjar, mynd):
         if not self.tomur():
             efst = self.spil_i_lista[-1]
-            if efst.hvernig_snyrdu():
-                hnit = efst.fa_spil()
-                kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
-                skjar.blit(mynd, kassi, (hnit[1], hnit[0], efst.breidd(), efst.haed()))
-            else:
-                kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
-                skjar.blit(efst.fa_bakhlid(), kassi)
+            hnit = efst.fa_spil()
+            kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
+            skjar.blit(mynd, kassi, (hnit[1], hnit[0], efst.breidd(), efst.haed()))
 
     def athuga(self,hnit):
         if not self.tomur():
@@ -127,16 +123,11 @@ class Bunki(Geymsla):
         if not self.tomur():
             yhnit = self.stadsetning[1]
             for i in self.spil_i_lista:
-                if i.hvernig_snyrdu():
-                    kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
-                    yhnit += self.skekkja + (18-len(self.spil_i_lista))
-                    hnit = i.fa_spil()
-                    skjar.blit(mynd,kassi,(hnit[1], hnit[0], i.breidd(), i.haed()))
-                else:
-                    kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
-                    yhnit += self.skekkja + (18-len(self.spil_i_lista))
-                    hnit = i.fa_spil()
-                    skjar.blit(i.fa_bakhlid(),kassi)
+                kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
+                yhnit += self.skekkja + (18-len(self.spil_i_lista))
+                hnit = i.fa_spil()
+                skjar.blit(mynd,kassi,(hnit[1], hnit[0], i.breidd(), i.haed()))
+
 
     def athuga(self,hnit):
         if not self.tomur():
@@ -153,6 +144,11 @@ class Bunki(Geymsla):
         if not self.tomur():
             return self.spil_i_lista[0]
 
+    def nedst_ofugt():
+        return self.spil_i_lista[-1].hvernig_snyrdu():
+
+    def snua_nedsta():
+        self.spil_i_lista[-1].snua()
 
 
 class Vidmot:
