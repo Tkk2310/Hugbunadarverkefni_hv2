@@ -154,9 +154,9 @@ class Bunki(Geymsla):
             return self.spil_i_lista[0]
 
 
-
-class Vidmot:
+class Reglur:
     pass
+
 
 class Leikur:
     def __init__(self):
