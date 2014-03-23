@@ -9,9 +9,15 @@ class Spil:
         self.snyr_upp = snyr
         self.spila_breidd = 71
         self.spila_haed = 96
-
+        self.heimili = False
         self.bakhlid = self.fa_mitt_spil('Auka', 1)
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
+
+    def hvar_attu_heima(self):
+        return self.heimili
+
+    def nytt_heimili(self,geymsla):
+        self.heimili = geymsla
 
     def snua(self):
         if self.snyr_upp == False:
@@ -72,6 +78,10 @@ class Geymsla:
 
     def flytja(self, hnit):
         self.stadsetning = hnit
+
+    def skila_fremsta(self):
+        if not self.tomur():
+            return self.spil_i_lista[-1]
 
 
 class Stokkur(Geymsla):
@@ -138,7 +148,7 @@ class Bunki(Geymsla):
                     return i
         return False
 
-    def skila_fyrsta(self):
+    def skila_aftasta(self):
         if not self.tomur():
             return self.spil_i_lista[0]
 
@@ -148,31 +158,70 @@ class Bunki(Geymsla):
     def snua_efsta(self):
         self.spil_i_lista[-1].snua()
 
+    def fjoldi_spila(self):
+        return len(self.spil_i_lista)
+
 
 class Reglur:
-    def __init__(self):
-        self.sidasta_spil = False
 
     def klikka(self):
         geymsla,spil = self.mus_yfir_spili()
-        if geymsla:
-            if self.hond.tomur():
-                if geymsla == self.stokkar[0]:
-                    self.sidasta_spil = False
-                    self.draga_nytt_spil()
-                elif not geymsla.snyr_efst_upp():
-                    geymsla.snua_efsta()
-                else:
-                    if geymsla == self.stokkar[1]:
-                        self.sidasta_spil = spil
-                    self.setja_a_hond(geymsla,spil)
+        if not geymsla: return
+        if self.hond.tomur():
+            if geymsla == self.stokkar[0]:
+                self.draga_nytt_spil()
+            elif not geymsla.snyr_efst_upp():
+                geymsla.snua_efsta()
             else:
-                if geymsla == self.stokkar[0]:
+                self.setja_a_hond(geymsla,spil)
+        else:
+            if geymsla == self.stokkar[0]:
+                return
+            if (geymsla == self.stokkar[1] and
+                self.hond.skila_aftasta().hvar_attu_heima() == self.stokkar[1]):
+                    self.taka_af_hond(geymsla)
                     return
-                if geymsla == self.stokkar[1] and not self.sidasta_spil:
-                    return
-                self.taka_af_hond(geymsla,spil)
-                self.sidasta_spil = False
+            if geymsla == self.stokkar[1]:
+                return
+            if geymsla == self.hond.skila_aftasta().hvar_attu_heima():
+                self.taka_af_hond(geymsla)
+                return
+            self.logleg_faersla(geymsla)
+
+    def logleg_faersla(self,geymsla):
+        aftast = self.hond.skila_aftasta().skila_spili()
+        fremst = geymsla.skila_fremsta().skila_spili()
+        if geymsla.draugur_lifandi() and aftast[1] == 13 and geymsla in self.bunkar:
+            self.taka_af_hond(geymsla)
+        if not self.litur(aftast[0]) == self.litur(fremst[0]):
+            if aftast[1]+1 == fremst[1]:
+                self.taka_af_hond(geymsla)
+        if geymsla in self.stokkar[2:]:
+            self.sigur_stokkar(geymsla)
+
+    def sigur_stokkar(self, geymsla):
+        spil = self.hond.skila_aftasta().skila_spili()
+        if geymsla.draugur_lifandi() and spil[1] == 1:
+            self.taka_af_hond(geymsla)
+        elif self.hond.fjoldi_spila() == 1:
+            spil_i_bunka = geymsla.skila_fremsta().skila_spili()
+            if spil_i_bunka[0] == spil[0] and spil_i_bunka[1]+1 == spil[1]:
+                self.taka_af_hond(geymsla)
+        self.leikur_buinn()
+
+    def leikur_buinn(self):
+        for i in self.stokkar[2:]:
+            if i.draugur_lifandi():
+                return
+            if not i.skila_fremsta().skila_spili()[1] == 13:
+                return
+        print('jei')
+
+    def litur(self,sort):
+        if sort == 'Hjarta' or sort == 'Tigull':
+            return 'Rautt'
+        else:
+            return 'Svart'
 
     def draga_nytt_spil(self):
         if not self.stokkar[0].draugur_lifandi():
@@ -190,14 +239,16 @@ class Reglur:
     def setja_a_hond(self,geymsla,spil):
         if geymsla and not geymsla.draugur_lifandi():
             mitt = geymsla.taka_af(spil)
+            mitt[0].nytt_heimili(geymsla)
             self.hond.setja_a(mitt)
             geymsla.setja_draug()
 
-    def taka_af_hond(self,geymsla,spil):
+    def taka_af_hond(self,geymsla):
         if geymsla:
             geymsla.taka_draug()
-            fyrsta = self.hond.skila_fyrsta()
-            spil = self.hond.taka_af(fyrsta)
+            aftasta = self.hond.skila_aftasta()
+            aftasta.nytt_heimili(False)
+            spil = self.hond.taka_af(aftasta)
             geymsla.setja_a(spil)
 
     def mus_yfir_spili(self):
@@ -215,12 +266,12 @@ class Reglur:
 class Leikur(Reglur):
 
     def __init__(self):
-        Reglur.__init__(self)
         self.undirbua()
         self.leikhringur()
 
     def undirbua(self):
         pg.init()
+        pg.display.set_caption('awesome-souce')
         self.spilandi = True
         self.halda_nidri = False
         self.klukka = pg.time.Clock()
