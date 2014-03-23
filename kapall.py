@@ -138,7 +138,7 @@ class Bunki(Geymsla):
                     return i
         return False
 
-    def skila_fyrsta(self):
+    def skila_aftasta(self):
         if not self.tomur():
             return self.spil_i_lista[0]
 
@@ -196,7 +196,7 @@ class Reglur:
     def taka_af_hond(self,geymsla,spil):
         if geymsla:
             geymsla.taka_draug()
-            fyrsta = self.hond.skila_fyrsta()
+            fyrsta = self.hond.skila_aftasta()
             spil = self.hond.taka_af(fyrsta)
             geymsla.setja_a(spil)
 
