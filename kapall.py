@@ -1,6 +1,7 @@
 import pygame as pg
 import random
 import datetime as dt
+import pickle
 
 class Spil:
 
@@ -358,6 +359,7 @@ class Leikur(Reglur):
         timi = timi.split('.')
         skilti = self.stafir.render(timi[0], 0, (255,255,255))
         skjar.blit(skilti, (700,450))
+
 
     def leikhringur(self):
         while self.spilandi:
