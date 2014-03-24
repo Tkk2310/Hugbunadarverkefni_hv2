@@ -209,16 +209,17 @@ class Reglur:
                 self.taka_af_hond(geymsla)
         if geymsla in self.stokkar[2:]:
             self.sigur_stokkar(geymsla)
-            self.breyta_stigum(10)
 
     def sigur_stokkar(self, geymsla):
         spil = self.hond.skila_aftasta().skila_spili()
         if geymsla.draugur_lifandi() and spil[1] == 1:
             self.taka_af_hond(geymsla)
+            self.breyta_stigum(10)
         elif self.hond.fjoldi_spila() == 1:
             spil_i_bunka = geymsla.skila_fremsta().skila_spili()
             if spil_i_bunka[0] == spil[0] and spil_i_bunka[1]+1 == spil[1]:
                 self.taka_af_hond(geymsla)
+                self.breyta_stigum(10)
         self.leikur_buinn()
 
     def leikur_buinn(self):
