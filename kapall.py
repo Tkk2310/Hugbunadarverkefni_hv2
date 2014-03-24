@@ -1,5 +1,6 @@
 import pygame as pg
 import random
+import datetime as dt
 
 class Spil:
 
@@ -164,14 +165,22 @@ class Bunki(Geymsla):
 
 class Reglur:
 
+    def __init__(self):
+        self.stig = 0
+
     def klikka(self):
         geymsla,spil = self.mus_yfir_spili()
         if not geymsla: return
         if self.hond.tomur():
             if geymsla == self.stokkar[0]:
-                self.draga_nytt_spil()
+                self.fletta_stokk()
+            elif geymsla.draugur_lifandi():
+                return
             elif not geymsla.snyr_efst_upp():
                 geymsla.snua_efsta()
+            elif geymsla in self.stokkar[2:]:
+                self.breyta_stigum(-10)
+                self.setja_a_hond(geymsla,spil)
             else:
                 self.setja_a_hond(geymsla,spil)
         else:
@@ -184,6 +193,8 @@ class Reglur:
             if geymsla == self.stokkar[1]:
                 return
             if geymsla == self.hond.skila_aftasta().hvar_attu_heima():
+                if geymsla in self.stokkar[2:]:
+                    self.breyta_stigum(10)
                 self.taka_af_hond(geymsla)
                 return
             self.logleg_faersla(geymsla)
@@ -198,6 +209,7 @@ class Reglur:
                 self.taka_af_hond(geymsla)
         if geymsla in self.stokkar[2:]:
             self.sigur_stokkar(geymsla)
+            self.breyta_stigum(10)
 
     def sigur_stokkar(self, geymsla):
         spil = self.hond.skila_aftasta().skila_spili()
@@ -223,11 +235,12 @@ class Reglur:
         else:
             return 'Svart'
 
-    def draga_nytt_spil(self):
+    def fletta_stokk(self):
         if not self.stokkar[0].draugur_lifandi():
             if self.stokkar[1].draugur_lifandi():
                 self.stokkar[1].taka_draug()
             self.stokkar[1].setja_a(self.stokkar[0].taka_af(None)[0].snua())
+            self.breyta_stigum(-1)
             if self.stokkar[0].tomur():
                 self.stokkar[0].setja_draug()
         else:
@@ -262,15 +275,24 @@ class Reglur:
                 return bnk,spil
         return False,False
 
+    def breyta_stigum(self,stig):
+        self.stig = self.stig+stig
+
+    def teikna_stig(self,skjar,stafir):
+        skilti = stafir.render('Stig = '+str(self.stig),0,(255,255,255))
+        skjar.blit(skilti,(500,450))
+
 
 class Leikur(Reglur):
 
     def __init__(self):
         self.undirbua()
+        Reglur.__init__(self)
         self.leikhringur()
 
     def undirbua(self):
         pg.init()
+        self.stafir = pg.font.SysFont("Arial", 17)
         pg.display.set_caption('awesome-souce')
         self.spilandi = True
         self.halda_nidri = False
@@ -330,12 +352,20 @@ class Leikur(Reglur):
                 atburdur.type == pg.QUIT):
                     self.spilandi = False
 
+    def klukkan(self,skjar):
+        timi = str(dt.timedelta(milliseconds=pg.time.get_ticks()))
+        timi = timi.split('.')
+        skilti = self.stafir.render(timi[0], 0, (255,255,255))
+        skjar.blit(skilti, (700,450))
+
     def leikhringur(self):
         while self.spilandi:
             self.gluggi.fill((0,150,0))
             self.teikna_stokka()
             self.samskipti()
             self.klukka.tick(200)
+            self.klukkan(self.gluggi)
+            self.teikna_stig(self.gluggi,self.stafir)
             pg.display.flip()
 
 if __name__ == '__main__':
