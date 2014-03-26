@@ -19,6 +19,8 @@ class Spil:
         self.bakhlid = self.fa_mitt_spil('Auka', 1)
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
 
+
+    #
     def hvar_attu_heima(self):
         return self.heimili
 
@@ -429,6 +431,7 @@ class Leikur(Reglur):
         timi = timi.split('.')
         skilti = self.stafir.render(timi[0], 0, (255,255,255))
         skjar.blit(skilti, (700,450))
+
 
     def leikhringur(self):
         while self.spilandi:
