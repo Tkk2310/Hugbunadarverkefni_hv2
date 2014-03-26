@@ -1,12 +1,13 @@
 import pygame as pg
 import random
 import datetime as dt
+import inputbox
 import pickle
 
 class Spil:
 
     def __init__(self,sort, gildi, snyr):
-        self.sort = sort
+        self.sort = sort 
         self.gildi = gildi
         self.snyr_upp = snyr
         self.spila_breidd = 71
@@ -15,6 +16,8 @@ class Spil:
         self.bakhlid = self.fa_mitt_spil('Auka', 1)
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
 
+
+    #
     def hvar_attu_heima(self):
         return self.heimili
 
@@ -284,11 +287,45 @@ class Reglur:
         skilti = stafir.render('Stig = '+str(self.stig),0,(255,255,255))
         skjar.blit(skilti,(500,450))
 
+class Vidmot:
+
+    def __init__(self,stafir):
+        staerd = 200,300
+        self.stafir = stafir
+        self.tafla = pg.Surface(staerd)
+        self.tafla.fill((150,0,150))
+        self.sh = (20,40,460,480)
+        self.rh = (60,80,460,480)
+        self.sm = pg.image.load('stig.png').convert_alpha()
+        self.rm = pg.image.load('smerki.png').convert_alpha()
+
+    def sja_stig(self,gluggi,mus,sigr):
+        gluggi.blit(self.sm,(self.sh[0],self.sh[2]))
+        if ((mus[0] > self.sh[0] and mus[0] < self.sh[1]) and
+            (mus[1] > self.sh[2] and mus[1] < self.sh[3])):
+                gluggi.blit(self.tafla,(300,100))
+                self.teikna_stig(sigr)
+
+    def sja_reglur(self,gluggi,mus,sigr):
+        gluggi.blit(self.rm,(self.rh[0],self.rh[2]))
+        if ((mus[0] > self.rh[0] and mus[0] < self.rh[1]) and
+            (mus[1] > self.rh[2] and mus[1] < self.rh[3])):
+                gluggi.blit(self.tafla,(300,100))
+                self.teikna_stig(sigr)
+
+    def teikna_stig(self,sigr):
+        skilti = self.stafir.render('Sigurvegarar',0,(0,255,255))
+        self.tafla.blit(skilti,(60,20))
+        for i in sorted(sigr,key=(lambda x: x[0])):
+            skilti = self.stafir.render(str(i[0])+': '+i[1]+' '+i[2]+' '+i[3],0,(255,255,255))
+            self.tafla.blit(skilti,(20,25*i[0]+30))
+
 
 class Leikur(Reglur):
 
     def __init__(self):
         self.undirbua()
+        self.vidmot = Vidmot(self.stafir)
         Reglur.__init__(self)
         self.leikhringur()
 
@@ -297,12 +334,29 @@ class Leikur(Reglur):
         self.stafir = pg.font.SysFont("Arial", 17)
         pg.display.set_caption('awesome-souce')
         self.spilandi = True
-        self.halda_nidri = False
+        self.lesa_stig()
         self.klukka = pg.time.Clock()
         self.gluggi = pg.display.set_mode((800,500))
         self.gluggi.fill((0,0,0))
         self.mynd = pg.image.load('mynd.png').convert()
         self.utbytta_spilum()
+
+    def lesa_stig(self):
+        try:
+            self.sigurvegarar = pickle.load(open('siggar.p','rb'))
+        except:
+            self.sigurvegarar = [[1,'Tommi','1:20:11','475']];
+            pickle.dump( self.sigurvegarar, open('siggar.p','wb'))
+
+    def vista_stig_og_tima(self):
+        timi = str(dt.timedelta(milliseconds=pg.time.get_ticks()))
+        timi = timi.split('.')
+        nafn = inputbox.ask(self.gluggi,"Nafn")[:8]
+        self.sigurvegarar.append([0,nafn,timi[0],str(self.stig)])
+        self.sigurvegarar.sort(key=(lambda x: int(x[3])),reverse=True)
+        for i in range(len(self.sigurvegarar)):
+            self.sigurvegarar[i][0] = i+1
+        pickle.dump( self.sigurvegarar, open('siggar.p','wb'))
 
     def utbytta_spilum(self):
         spil = [Spil(tegund,numer, False) for tegund in ['Hjarta','Spadi','Tigull','Lauf'] for numer in range(1,14)]
@@ -345,6 +399,8 @@ class Leikur(Reglur):
 
     def samskipti(self):
         mus = pg.mouse.get_pos()
+        self.vidmot.sja_stig(self.gluggi,mus,self.sigurvegarar)
+        self.vidmot.sja_reglur(self.gluggi,mus,self.sigurvegarar)
         for atburdur in pg.event.get():
             if atburdur.type == pg.MOUSEBUTTONDOWN:
                 self.klikka()
@@ -370,6 +426,8 @@ class Leikur(Reglur):
             self.klukkan(self.gluggi)
             self.teikna_stig(self.gluggi,self.stafir)
             pg.display.flip()
+        print('hallo')
+        self.vista_stig_og_tima()
 
 if __name__ == '__main__':
     Leikur()
