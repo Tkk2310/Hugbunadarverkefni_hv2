@@ -17,7 +17,6 @@ class Spil:
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
 
 
-    #
     def hvar_attu_heima(self):
         return self.heimili
 
@@ -54,6 +53,9 @@ class Spil:
 
     def hvernig_snyrdu(self):
         return self.snyr_upp
+
+    def breyta_bakgrunn(self, tala):
+        self.bakhlid = self.fa_mitt_spil('Auka', tala)
 
 
 class Geymsla:
