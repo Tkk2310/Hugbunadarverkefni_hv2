@@ -18,6 +18,7 @@ class Spil:
         self.heimili = False
         self.bakhlid = self.fa_mitt_spil('Auka', 1)
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
+        self.er_med_mynd = False
 
 
     #
@@ -61,9 +62,15 @@ class Spil:
     def breyta_bakhlid(self,numer=1, mynd=False):
         if mynd:
             self.baklid = pg.image.load(mynd)
+            self.er_med_mynd = True
         else:
             self.baklid = self.fa_mitt_spil('Auka',numer)
 
+    def ertu_med_mynd(self):
+        return self.er_med_mynd
+
+    def fa_bakhlid(self):
+        return self.baklid
 
 
 class Geymsla:
@@ -118,11 +125,14 @@ class Stokkur(Geymsla):
     def teikna(self, skjar, mynd):
         if not self.tomur():
             efst = self.spil_i_lista[-1]
-            hnit = efst.fa_spil()
-            kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
-            skjar.blit(mynd, kassi, (hnit[1], hnit[0], efst.breidd(), efst.haed()))
-
-    def athuga(self,hnit):
+            if not efst.ertu_med_mynd():
+                hnit = efst.fa_spil()
+                kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
+                skjar.blit(mynd, kassi, (hnit[1], hnit[0], efst.breidd(), efst.haed()))
+            else:
+                kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
+                skjar.blit(efst.fa_bakhlid(), kassi)
+    def athuga(self,hnit): 
         if not self.tomur():
             efst = self.spil_i_lista[-1]
             kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
@@ -152,10 +162,15 @@ class Bunki(Geymsla):
         if not self.tomur():
             yhnit = self.stadsetning[1]
             for i in self.spil_i_lista:
-                kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
-                yhnit += self.skekkja + (18-len(self.spil_i_lista))
-                hnit = i.fa_spil()
-                skjar.blit(mynd,kassi,(hnit[1], hnit[0], i.breidd(), i.haed()))
+                if not i.ertu_med_mynd():
+                    kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
+                    yhnit += self.skekkja + (18-len(self.spil_i_lista))
+                    hnit = i.fa_spil()
+                    skjar.blit(mynd,kassi,(hnit[1], hnit[0], i.breidd(), i.haed()))
+                else:
+                    kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
+                    yhnit += self.skekkja + (18-len(self.spil_i_lista))
+                    skjar.blit(i.fa_bakhlid(),kassi)
 
     def athuga(self,hnit):
         if not self.tomur():
