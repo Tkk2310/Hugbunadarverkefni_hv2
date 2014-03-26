@@ -20,6 +20,7 @@ class Spil:
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
 
 
+    #
     def hvar_attu_heima(self):
         return self.heimili
 
@@ -56,9 +57,6 @@ class Spil:
 
     def hvernig_snyrdu(self):
         return self.snyr_upp
-
-    def breyta_bakgrunn(self, tala):
-        self.bakhlid = self.fa_mitt_spil('Auka', tala)
 
 
 class Geymsla:
@@ -353,7 +351,7 @@ class Leikur(Reglur):
         try:
             self.sigurvegarar = pickle.load(open('siggar.p','rb'))
         except:
-            self.sigurvegarar = [[1,'Tommi','1:20:11','475']];
+            self.sigurvegarar = [];
             pickle.dump( self.sigurvegarar, open('siggar.p','wb'))
 
     def vista_stig_og_tima(self):
