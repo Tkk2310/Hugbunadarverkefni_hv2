@@ -16,7 +16,7 @@ class Spil:
         self.spila_breidd = 71
         self.spila_haed = 96
         self.heimili = False
-        self.bakhlid = self.fa_mitt_spil('Auka', 1)
+        self.bakhlid = self.fa_mitt_spil('Auka', 5)
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
         self.er_med_mynd = False
 
@@ -80,7 +80,7 @@ class Geymsla:
 
     def setja_draug(self):
         if self.tomur():
-            self.setja_a(Spil('Auka',6,True))
+            self.setja_a(Spil('Auka',1,True))
             self.draugur = True
 
     def taka_draug(self):
@@ -371,7 +371,7 @@ class Leikur(Reglur):
         self.klukka = pg.time.Clock()
         self.gluggi = pg.display.set_mode((800,500))
         self.gluggi.fill((0,0,0))
-        self.mynd = pg.image.load('mynd.png').convert()
+        self.mynd = pg.image.load('spil.png').convert_alpha()
         self.utbytta_spilum()
 
     def lesa_stig(self):
