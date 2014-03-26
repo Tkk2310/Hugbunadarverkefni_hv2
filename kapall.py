@@ -58,6 +58,13 @@ class Spil:
     def hvernig_snyrdu(self):
         return self.snyr_upp
 
+    def breyta_bakhlid(self,numer=1, mynd=False):
+        if mynd:
+            self.baklid = pg.image.load(mynd)
+        else:
+            self.baklid = self.fa_mitt_spil('Auka',numer)
+
+
 
 class Geymsla:
 
@@ -90,6 +97,11 @@ class Geymsla:
     def skila_fremsta(self):
         if not self.tomur():
             return self.spil_i_lista[-1]
+
+    def breyta_bakhlid_spila(self,numer=1,mynd=False):
+        if not self.draugur_lifandi():
+            for i in self.spil_i_lista:
+                i.breyta_bakhlid(numer,mynd)
 
 
 class Stokkur(Geymsla):
