@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import pygame as pg
 import random
 import datetime as dt
@@ -296,6 +299,7 @@ class Vidmot:
         self.rh = (60,80,460,480)
         self.sm = pg.image.load('stig.png').convert_alpha()
         self.rm = pg.image.load('smerki.png').convert_alpha()
+        self.reglur = pg.image.load('mynd.png').convert()
 
     def sja_stig(self,gluggi,mus,sigr):
         gluggi.blit(self.sm,(self.sh[0],self.sh[2]))
@@ -309,7 +313,7 @@ class Vidmot:
         if ((mus[0] > self.rh[0] and mus[0] < self.rh[1]) and
             (mus[1] > self.rh[2] and mus[1] < self.rh[3])):
                 gluggi.blit(self.tafla,(300,100))
-                self.teikna_stig(sigr)
+                self.teikna_reglur()
 
     def teikna_stig(self,sigr):
         skilti = self.stafir.render('Sigurvegarar',0,(0,255,255))
@@ -317,6 +321,18 @@ class Vidmot:
         for i in sorted(sigr,key=(lambda x: x[0])):
             skilti = self.stafir.render(str(i[0])+': '+i[1]+' '+i[2]+' '+i[3],0,(255,255,255))
             self.tafla.blit(skilti,(20,25*i[0]+30))
+
+    def teikna_reglur(self):
+        skilti = self.stafir.render('Reglur',0,(0,255,255))
+        self.tafla.blit(skilti,(60,20))
+        reglur = ['Leikurinn gengur út á að',
+                  'askdjhfalksdhjfa',
+                  'sdhalkdhjfasdlkjf',
+                  'asldkfhaskdjhf',
+                  'skdjhaf askfh salkd',
+                  'alskdjhfalksd alksdhjfj']
+        for i in range(len(reglur)):
+            self.tafla.blit(self.stafir.render(reglur[i],0,(0,255,255)),(20,20*i + 40))
 
 
 class Leikur(Reglur):
@@ -423,7 +439,6 @@ class Leikur(Reglur):
             self.klukkan(self.gluggi)
             self.teikna_stig(self.gluggi,self.stafir)
             pg.display.flip()
-        print('hallo')
         self.vista_stig_og_tima()
 
 if __name__ == '__main__':
