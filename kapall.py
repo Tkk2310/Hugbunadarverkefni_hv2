@@ -16,7 +16,7 @@ class Spil:
         self.spila_breidd = 71
         self.spila_haed = 96
         self.heimili = False
-        self.bakhlid = self.fa_mitt_spil('Auka', 5)
+        self.bakhlid = self.fa_mitt_spil('Auka', 2)
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
         self.er_med_mynd = False
 
