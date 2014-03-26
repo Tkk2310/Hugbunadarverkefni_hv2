@@ -292,7 +292,9 @@ class Reglur:
 
 class Vidmot:
 
-    def __init__(self,stafir):
+    def __init__(self,stafir,stokkar,bunkar):
+        self.stokkar = stokkar
+        self.bunkar = bunkar
         staerd = 200,300
         self.stafir = stafir
         self.tafla = pg.Surface(staerd)
@@ -322,16 +324,24 @@ class Vidmot:
         for i in sorted(sigr,key=(lambda x: x[0])):
             skilti = self.stafir.render(str(i[0])+': '+i[1]+' '+i[2]+' '+i[3],0,(255,255,255))
             self.tafla.blit(skilti,(20,25*i[0]+30))
+        self.velja_mynd(3)
 
     def teikna_reglur(self,gluggi):
         gluggi.blit(self.reglur,(300,100))
+        self.velja_mynd(2)
+
+    def velja_mynd(self,numer):
+        for i in self.stokkar:
+            i.breyta_bakhlid_spila(numer=numer)
+        for i in self.bunkar:
+            i.breyta_bakhlid_spila(numer=numer)
 
 
 class Leikur(Reglur):
 
     def __init__(self):
         self.undirbua()
-        self.vidmot = Vidmot(self.stafir)
+        self.vidmot = Vidmot(self.stafir,self.stokkar,self.bunkar)
         Reglur.__init__(self)
         self.leikhringur()
 
