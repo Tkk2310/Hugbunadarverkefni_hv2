@@ -58,12 +58,11 @@ class Spil:
     def hvernig_snyrdu(self):
         return self.snyr_upp
 
-    def breyta_bakhlid(self,numer=1, mynd=False):
+    def breyta_bakhlid(self, numer=1, mynd=False):
         if mynd:
-            self.baklid = pg.image.load(mynd)
+            self.bakhlid = pg.image.load(mynd)
         else:
-            self.baklid = self.fa_mitt_spil('Auka',numer)
-
+            self.bakhlid = self.fa_mitt_spil('Auka',numer)
 
 
 class Geymsla:
@@ -98,7 +97,7 @@ class Geymsla:
         if not self.tomur():
             return self.spil_i_lista[-1]
 
-    def breyta_bakhlid_spila(self,numer=1,mynd=False):
+    def breyta_bakhlid_spila(self, numer=1, mynd=False):
         if not self.draugur_lifandi():
             for i in self.spil_i_lista:
                 i.breyta_bakhlid(numer,mynd)
@@ -187,8 +186,8 @@ class Reglur:
     def __init__(self):
         self.stig = 0
 
-    def klikka(self):
-        geymsla,spil = self.mus_yfir_spili()
+    def klikka_a_spil(self,mus):
+        geymsla,spil = self.mus_yfir_spili(mus)
         if not geymsla: return
         if self.hond.tomur():
             if geymsla == self.stokkar[0]:
@@ -284,13 +283,13 @@ class Reglur:
             spil = self.hond.taka_af(aftasta)
             geymsla.setja_a(spil)
 
-    def mus_yfir_spili(self):
+    def mus_yfir_spili(self,mus):
         for stk in self.stokkar:
-            spil = stk.athuga(pg.mouse.get_pos())
+            spil = stk.athuga(mus)
             if spil:
                 return stk,spil
         for bnk in self.bunkar:
-            spil = bnk.athuga(pg.mouse.get_pos())
+            spil = bnk.athuga(mus)
             if spil:
                 return bnk,spil
         return False,False
@@ -304,42 +303,48 @@ class Reglur:
 
 class Vidmot:
 
-    def __init__(self,stafir,stokkar,bunkar):
-        self.stokkar = stokkar
-        self.bunkar = bunkar
-        staerd = 200,300
-        self.stafir = stafir
-        self.tafla = pg.Surface(staerd)
+    def __init__(self):
+        self.tafla = pg.Surface((200,300))
+        self.valmynd = pg.Surface((300,500))
+        self.valmynd_uppi = False
         self.tafla.fill((150,0,150))
+        self.valmynd.fill((0,150,150))
         self.sh = (20,40,460,480)
         self.rh = (60,80,460,480)
+        self.vh = (100,120,460,480)
         self.sm = pg.image.load('stig.png').convert_alpha()
+        self.sm_rect = self.sm.get_rect()
+        self.sm_rect.x = 20
+        self.sm_rect.y = 460
         self.rm = pg.image.load('smerki.png').convert_alpha()
+        self.vm = pg.image.load('smerki.png').convert_alpha()
         self.reglur = pg.image.load('Reglur.png').convert()
 
-    def sja_stig(self,gluggi,mus,sigr):
-        gluggi.blit(self.sm,(self.sh[0],self.sh[2]))
+    def sja_stig(self,mus):
+        self.gluggi.blit(self.sm,self.sm_rect)
+        if self.sm_rect.collidepoint(mus):
+            print('hallo')
         if ((mus[0] > self.sh[0] and mus[0] < self.sh[1]) and
             (mus[1] > self.sh[2] and mus[1] < self.sh[3])):
-                gluggi.blit(self.tafla,(300,100))
-                self.teikna_stig(sigr)
+                self.gluggi.blit(self.tafla,(300,100))
+                self.teikna_stigatoflu()
 
-    def sja_reglur(self,gluggi,mus,sigr):
-        gluggi.blit(self.rm,(self.rh[0],self.rh[2]))
+    def sja_reglur(self,mus):
+        self.gluggi.blit(self.rm,(self.rh[0],self.rh[2]))
         if ((mus[0] > self.rh[0] and mus[0] < self.rh[1]) and
             (mus[1] > self.rh[2] and mus[1] < self.rh[3])):
-                self.teikna_reglur(gluggi)
+                self.teikna_reglur()
 
-    def teikna_stig(self,sigr):
+    def teikna_stigatoflu(self):
         skilti = self.stafir.render('Sigurvegarar',0,(0,255,255))
         self.tafla.blit(skilti,(60,20))
-        for i in sorted(sigr,key=(lambda x: x[0])):
+        for i in sorted(self.sigurvegarar,key=(lambda x: x[0])):
             skilti = self.stafir.render(str(i[0])+': '+i[1]+' '+i[2]+' '+i[3],0,(255,255,255))
             self.tafla.blit(skilti,(20,25*i[0]+30))
         self.velja_mynd(3)
 
-    def teikna_reglur(self,gluggi):
-        gluggi.blit(self.reglur,(300,100))
+    def teikna_reglur(self):
+        self.gluggi.blit(self.reglur,(300,100))
         self.velja_mynd(2)
 
     def velja_mynd(self,numer):
@@ -348,13 +353,30 @@ class Vidmot:
         for i in self.bunkar:
             i.breyta_bakhlid_spila(numer=numer)
 
+    def teikna_valglugga(self):
+        self.gluggi.blit(self.valmynd,(100,0))
 
-class Leikur(Reglur):
+    def sja_valglugga(self,mus):
+        if (self.valmynd_uppi == True and
+           (mus[0] > 400 or mus[0] < 100)):
+                self.valmynd_uppi = False
+        if ((mus[0] > self.vh[0] and mus[0] < self.vh[1]) and
+            (mus[1] > self.vh[2] and mus[1] < self.vh[3]) or
+            self.valmynd_uppi == True):
+                self.teikna_valglugga()
+                self.valmynd_uppi = True
+        self.gluggi.blit(self.vm,(self.vh[0],self.vh[2]))
+
+    def klikka_a_mynd(self,mus):
+        pass
+
+
+class Leikur(Reglur,Vidmot):
 
     def __init__(self):
         self.undirbua()
-        self.vidmot = Vidmot(self.stafir,self.stokkar,self.bunkar)
         Reglur.__init__(self)
+        Vidmot.__init__(self)
         self.leikhringur()
 
     def undirbua(self):
@@ -427,33 +449,40 @@ class Leikur(Reglur):
 
     def samskipti(self):
         mus = pg.mouse.get_pos()
-        self.vidmot.sja_stig(self.gluggi,mus,self.sigurvegarar)
-        self.vidmot.sja_reglur(self.gluggi,mus,self.sigurvegarar)
+        self.sja_stig(mus)
+        self.sja_reglur(mus)
+        self.sja_valglugga(mus)
         for atburdur in pg.event.get():
             if atburdur.type == pg.MOUSEBUTTONDOWN:
-                self.klikka()
+                if self.valmynd_uppi:
+                    self.klikka_a_mynd(mus)
+                else:
+                    self.klikka_a_spil(mus)
             self.hond.flytja((mus[0]-36,mus[1]-10))
             if (atburdur.type == pg.KEYDOWN and
                 atburdur.key == pg.K_ESCAPE or
                 atburdur.type == pg.QUIT):
                     self.spilandi = False
 
-    def klukkan(self,skjar):
+    def taka_tima(self):
+        self.klukka.tick(200)
         timi = str(dt.timedelta(milliseconds=pg.time.get_ticks()))
         timi = timi.split('.')
         skilti = self.stafir.render(timi[0], 0, (255,255,255))
-        skjar.blit(skilti, (700,450))
+        self.gluggi.blit(skilti, (700,450))
 
+    def teikna_bakgrunn(self):
+        self.gluggi.fill((0,150,0))
 
     def leikhringur(self):
         while self.spilandi:
-            self.gluggi.fill((0,150,0))
+            self.teikna_bakgrunn()
             self.teikna_stokka()
             self.samskipti()
-            self.klukka.tick(200)
-            self.klukkan(self.gluggi)
+            self.taka_tima()
             self.teikna_stig(self.gluggi,self.stafir)
             pg.display.flip()
+
 
 if __name__ == '__main__':
     Leikur()
