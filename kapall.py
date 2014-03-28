@@ -16,9 +16,9 @@ class Spil:
         self.spila_breidd = 71
         self.spila_haed = 96
         self.heimili = False
-        self.bakhlid = self.fa_mitt_spil('Auka', 1)
+        self.bakhlid = self.fa_mitt_spil('Auka', 2)
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
-
+        self.er_med_mynd = False
 
     #
     def hvar_attu_heima(self):
@@ -61,8 +61,15 @@ class Spil:
     def breyta_bakhlid(self, numer=1, mynd=False):
         if mynd:
             self.bakhlid = pg.image.load(mynd)
+            self.er_med_mynd = True
         else:
             self.bakhlid = self.fa_mitt_spil('Auka',numer)
+
+    def ertu_med_mynd(self):
+        return self.er_med_mynd
+
+    def fa_bakhlid(self):
+        return self.bakhlid
 
 
 class Geymsla:
@@ -72,7 +79,7 @@ class Geymsla:
 
     def setja_draug(self):
         if self.tomur():
-            self.setja_a(Spil('Auka',6,True))
+            self.setja_a(Spil('Auka',1,True))
             self.draugur = True
 
     def taka_draug(self):
@@ -117,9 +124,13 @@ class Stokkur(Geymsla):
     def teikna(self, skjar, mynd):
         if not self.tomur():
             efst = self.spil_i_lista[-1]
-            hnit = efst.fa_spil()
-            kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
-            skjar.blit(mynd, kassi, (hnit[1], hnit[0], efst.breidd(), efst.haed()))
+            if efst.ertu_med_mynd() and not efst.hvernig_snyrdu():
+                kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
+                skjar.blit(efst.fa_bakhlid(), kassi)
+            else:
+                hnit = efst.fa_spil()
+                kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
+                skjar.blit(mynd, kassi, (hnit[1], hnit[0], efst.breidd(), efst.haed()))
 
     def athuga(self,hnit):
         if not self.tomur():
@@ -151,10 +162,16 @@ class Bunki(Geymsla):
         if not self.tomur():
             yhnit = self.stadsetning[1]
             for i in self.spil_i_lista:
-                kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
-                yhnit += self.skekkja + (18-len(self.spil_i_lista))
-                hnit = i.fa_spil()
-                skjar.blit(mynd,kassi,(hnit[1], hnit[0], i.breidd(), i.haed()))
+                if i.ertu_med_mynd() and not i.hvernig_snyrdu():
+                    kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
+                    yhnit += self.skekkja + (18-len(self.spil_i_lista))
+                    skjar.blit(i.fa_bakhlid(),kassi)
+
+                else:
+                    kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
+                    yhnit += self.skekkja + (18-len(self.spil_i_lista))
+                    hnit = i.fa_spil()
+                    skjar.blit(mynd,kassi,(hnit[1], hnit[0], i.breidd(), i.haed()))
 
     def athuga(self,hnit):
         if not self.tomur():
@@ -388,7 +405,7 @@ class Leikur(Reglur,Vidmot):
         self.klukka = pg.time.Clock()
         self.gluggi = pg.display.set_mode((800,500))
         self.gluggi.fill((0,0,0))
-        self.mynd = pg.image.load('mynd.png').convert()
+        self.mynd = pg.image.load('spil.png').convert_alpha()
         self.utbytta_spilum()
 
     def lesa_stig(self):
@@ -463,6 +480,12 @@ class Leikur(Reglur,Vidmot):
                 atburdur.key == pg.K_ESCAPE or
                 atburdur.type == pg.QUIT):
                     self.spilandi = False
+            if (atburdur.type == pg.KEYDOWN and
+                atburdur.key == pg.K_p):
+                for i in self.stokkar:
+                    i.breyta_bakhlid_spila(0,'bakhlid.png')
+                for i in self.bunkar:
+                    i.breyta_bakhlid_spila(0,'bakhlid.png')
 
     def taka_tima(self):
         self.klukka.tick(200)
