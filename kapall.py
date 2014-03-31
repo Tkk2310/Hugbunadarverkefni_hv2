@@ -340,7 +340,7 @@ class Vidmot:
     def sja_stig(self,mus):
         self.gluggi.blit(self.sm,self.sm_rect)
         if self.sm_rect.collidepoint(mus):
-            print('hallo')
+            pass
         if ((mus[0] > self.sh[0] and mus[0] < self.sh[1]) and
             (mus[1] > self.sh[2] and mus[1] < self.sh[3])):
                 self.gluggi.blit(self.tafla,(300,100))
@@ -405,7 +405,7 @@ class Leikur(Reglur,Vidmot):
         self.klukka = pg.time.Clock()
         self.gluggi = pg.display.set_mode((800,500))
         self.gluggi.fill((0,0,0))
-        self.mynd = pg.image.load('spil.png').convert_alpha()
+        self.mynd = pg.image.load('Spil.png').convert_alpha()
         self.utbytta_spilum()
 
     def lesa_stig(self):
