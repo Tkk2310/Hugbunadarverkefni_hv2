@@ -545,9 +545,9 @@ class Leikur(Reglur,Vidmot):
     def breyta_mynd(self):
         if type(self.bakhlid[0]) == str:
             for i in self.stokkar:
-                i.breyta_bakhlid_spila(self.bakhlid[0])
+                i.breyta_bakhlid_spila(1,self.bakhlid[0])
             for i in self.bunkar:
-                i.breyta_bakhlid_spila(self.bakhlid[0])
+                i.breyta_bakhlid_spila(1,self.bakhlid[0])
         else:
             for i in self.stokkar:
                 i.breyta_bakhlid_spila(self.bakhlid[0])
