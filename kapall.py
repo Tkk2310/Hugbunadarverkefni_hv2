@@ -454,15 +454,18 @@ class Vidmot:
                     self.velja_mynd(i[1])
 
     def myndavel(self):
-        pygame.camera.init()
-        cam = pygame.camera.Camera(pygame.camera.list_cameras()[0])
+        try:
+            pygame.camera.init()
+            cam = pygame.camera.Camera(pygame.camera.list_cameras()[0])
+        except:
+            cam = None
         if not cam is None:
             cam.start()
             img = cam.get_image()
             img = pg.transform.scale(img,(71,96))
             pygame.image.save(img, "photo.bmp")
             cam.stop()
-        self.velja_mynd(mynd="photo.bmp")
+            self.velja_mynd(mynd="photo.bmp")
 
 
 class Leikur(Reglur,Vidmot):
@@ -584,7 +587,7 @@ class Leikur(Reglur,Vidmot):
         hlutfall = int((float(self.leikir[0])/self.leikir[1]) * 100)
         skilti = self.stafir.render(str(self.leikir[0])+"/"+str(self.leikir[1])+"="+str(hlutfall)+"%", 0, (255,255,255))
         self.gluggi.blit(skilti, (600,450))
-   
+
     def teikna_bakgrunn(self):
         self.gluggi.fill((0,150,0))
 
@@ -594,7 +597,7 @@ class Leikur(Reglur,Vidmot):
             self.teikna_stokka()
             self.samskipti()
             self.taka_tima()
-            self.teikna_hlutfall() 
+            self.teikna_hlutfall()
             self.teikna_stig(self.gluggi,self.stafir)
             pg.display.flip()
 
