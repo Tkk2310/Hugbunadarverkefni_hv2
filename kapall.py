@@ -2,6 +2,8 @@
 # encoding: utf-8
 
 import pygame as pg
+import pygame.camera
+import pygame.image
 import random
 import datetime as dt
 import inputbox
@@ -64,6 +66,7 @@ class Spil:
             self.er_med_mynd = True
         else:
             self.bakhlid = self.fa_mitt_spil('Auka',numer)
+            self.er_med_mynd = False
 
     def ertu_med_mynd(self):
         return self.er_med_mynd
@@ -326,31 +329,49 @@ class Vidmot:
         self.valmynd_uppi = False
         self.tafla.fill((150,0,150))
         self.valmynd.fill((0,150,150))
-        self.sh = (20,40,460,480)
-        self.rh = (60,80,460,480)
+        self.reglur = pg.image.load('Reglur.png').convert()
+        self.bua_til_myndir()
+        self.stadsetja_takka()
+
+    def bua_til_myndir(self):
+        plat_spil = Spil('Auka',3,False)
+        staerd = plat_spil.breidd(),plat_spil.haed()
+        self.myndir_a_bakhlid = []
+        self.kassar_bakhlida = []
+        for i in range(4):
+            x = i - 3*int(i/3.0)
+            y = int(i/3.0)
+            hnit = plat_spil.fa_mitt_spil('Auka',i+2)
+            kassi = pg.Rect(20+90*x,20+110*y,staerd[0],staerd[1])
+            uppl = (self.mynd, kassi, (hnit[1], hnit[0],staerd[0],staerd[1]))
+            self.myndir_a_bakhlid.append(uppl)
+            self.kassar_bakhlida.append((kassi,i+2))
+
+    def stadsetja_takka(self):
         self.vh = (100,120,460,480)
         self.sm = pg.image.load('stig.png').convert_alpha()
-        self.sm_rect = self.sm.get_rect()
-        self.sm_rect.x = 20
-        self.sm_rect.y = 460
         self.rm = pg.image.load('smerki.png').convert_alpha()
         self.vm = pg.image.load('smerki.png').convert_alpha()
-        self.reglur = pg.image.load('Reglur.png').convert()
+        self.sm_kassi = self.sm.get_rect()
+        self.rm_kassi = self.rm.get_rect()
+        self.vm_kassi = self.vm.get_rect()
+        self.sm_kassi.x = 20
+        self.sm_kassi.y = 460
+        self.rm_kassi.x = 60
+        self.rm_kassi.y = 460
+        self.vm_kassi.x = 100
+        self.vm_kassi.y = 460
 
     def sja_stig(self,mus):
-        self.gluggi.blit(self.sm,self.sm_rect)
-        if self.sm_rect.collidepoint(mus):
-            pass
-        if ((mus[0] > self.sh[0] and mus[0] < self.sh[1]) and
-            (mus[1] > self.sh[2] and mus[1] < self.sh[3])):
-                self.gluggi.blit(self.tafla,(300,100))
-                self.teikna_stigatoflu()
+        self.gluggi.blit(self.sm,self.sm_kassi)
+        if self.sm_kassi.collidepoint(mus):
+            self.gluggi.blit(self.tafla,(300,100))
+            self.teikna_stigatoflu()
 
     def sja_reglur(self,mus):
-        self.gluggi.blit(self.rm,(self.rh[0],self.rh[2]))
-        if ((mus[0] > self.rh[0] and mus[0] < self.rh[1]) and
-            (mus[1] > self.rh[2] and mus[1] < self.rh[3])):
-                self.teikna_reglur()
+        self.gluggi.blit(self.rm,self.rm_kassi)
+        if self.rm_kassi.collidepoint(mus):
+            self.teikna_reglur()
 
     def teikna_stigatoflu(self):
         skilti = self.stafir.render('Sigurvegarar',0,(0,255,255))
@@ -358,34 +379,48 @@ class Vidmot:
         for i in sorted(self.sigurvegarar,key=(lambda x: x[0])):
             skilti = self.stafir.render(str(i[0])+': '+i[1]+' '+i[2]+' '+i[3],0,(255,255,255))
             self.tafla.blit(skilti,(20,25*i[0]+30))
-        self.velja_mynd(3)
 
     def teikna_reglur(self):
         self.gluggi.blit(self.reglur,(300,100))
-        self.velja_mynd(2)
 
-    def velja_mynd(self,numer):
+    def velja_mynd(self,numer=1,mynd=False):
         for i in self.stokkar:
-            i.breyta_bakhlid_spila(numer=numer)
+            i.breyta_bakhlid_spila(numer=numer,mynd=mynd)
         for i in self.bunkar:
-            i.breyta_bakhlid_spila(numer=numer)
+            i.breyta_bakhlid_spila(numer=numer,mynd=mynd)
 
     def teikna_valglugga(self):
+        for i in self.myndir_a_bakhlid:
+            self.valmynd.blit(*i)
         self.gluggi.blit(self.valmynd,(100,0))
 
     def sja_valglugga(self,mus):
         if (self.valmynd_uppi == True and
            (mus[0] > 400 or mus[0] < 100)):
                 self.valmynd_uppi = False
-        if ((mus[0] > self.vh[0] and mus[0] < self.vh[1]) and
-            (mus[1] > self.vh[2] and mus[1] < self.vh[3]) or
+        if (self.vm_kassi.collidepoint(mus) or
             self.valmynd_uppi == True):
                 self.teikna_valglugga()
                 self.valmynd_uppi = True
         self.gluggi.blit(self.vm,(self.vh[0],self.vh[2]))
 
     def klikka_a_mynd(self,mus):
-        pass
+        if self.kassar_bakhlida[-1][0].collidepoint((mus[0]-100,mus[1])):
+            self.myndavel()
+        else:
+            for i in self.kassar_bakhlida:
+                if i[0].collidepoint((mus[0]-100,mus[1])):
+                    self.velja_mynd(i[1])
+
+    def myndavel(self):
+        pygame.camera.init()
+        cam = pygame.camera.Camera(pygame.camera.list_cameras()[0])
+        cam.start()
+        img = cam.get_image()
+        img = pg.transform.scale(img,(71,96))
+        pygame.image.save(img, "photo.bmp")
+        cam.stop()
+        self.velja_mynd(mynd="photo.bmp")
 
 
 class Leikur(Reglur,Vidmot):
@@ -413,7 +448,7 @@ class Leikur(Reglur,Vidmot):
             self.sigurvegarar = pickle.load(open('siggar.p','rb'))
         except:
             self.sigurvegarar = [];
-            pickle.dump( self.sigurvegarar, open('siggar.p','wb'))
+            pickle.dump(self.sigurvegarar,open('siggar.p','wb'))
 
     def vista_stig_og_tima(self):
         timi = str(dt.timedelta(milliseconds=pg.time.get_ticks()))
