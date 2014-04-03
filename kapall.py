@@ -11,24 +11,29 @@ import pickle
 
 class Spil:
 
+    #Spil er klasi sem heldur utan um hvert spil. Spil tekur við hvaða sort spilið er,
+    #hvaða gildi og hvernig það snýr sem viðfangs breytur.
+
     def __init__(self,sort, gildi, snyr):
         self.sort = sort
         self.gildi = gildi
         self.snyr_upp = snyr
-        self.spila_breidd = 71
-        self.spila_haed = 96
-        self.heimili = False
-        self.bakhlid = self.fa_mitt_spil('Auka', 2)
-        self.framhlid = self.fa_mitt_spil(self.sort, self.gildi)
-        self.er_med_mynd = False
+        self.spila_breidd = 71 #beriedd spilanna í pixlum
+        self.spila_haed = 96 #hæð spilanna í pxlum
+        self.heimili = False #geymir bunkann sem spilið tilheyrir
+        self.bakhlid = self.fa_mitt_spil('Auka', 2) #vísir á bakhlið spilins í spil.png myndinni
+        self.framhlid = self.fa_mitt_spil(self.sort, self.gildi) #vísir á framhlið spilins í spil.png myndinni
+        self.er_med_mynd = False #flag sem segir til um hvort bakliðin sé png mynd eða tupul(vísir á bakliðina)
 
-    #
+    #skilar hvaða bunka spilið var í
     def hvar_attu_heima(self):
         return self.heimili
 
+    #gefa spilinu bunka
     def nytt_heimili(self,geymsla):
         self.heimili = geymsla
 
+    #snúa spilinu
     def snua(self):
         if self.snyr_upp == False:
             self.snyr_upp = True
@@ -36,12 +41,14 @@ class Spil:
             self.snyr_upp = False
         return self
 
+    #fá vísanna á spilið, bæði fram- og bakhlið
     def fa_spil(self):
         if self.snyr_upp:
             return self.framhlid
         else:
             return self.bakhlid
 
+    #fall sem býr til vísi á spilið í spil.png myndinni
     def fa_mitt_spil(self, sort, gildi):
         sortir = {'Lauf' : 0,'Spadi': 1 ,'Hjarta' : 2, 'Tigull' : 3, 'Auka' : 4}
         rod =  sortir[sort] * self.spila_haed
@@ -54,6 +61,7 @@ class Spil:
     def haed(self):
         return self.spila_haed
 
+    #skilar tupul um gildi og sort spilsins
     def skila_spili(self):
         return (self.sort,self.gildi)
 
@@ -71,15 +79,20 @@ class Spil:
     def ertu_med_mynd(self):
         return self.er_med_mynd
 
+    #skilar bakhliðinni ef hún er mynd
     def fa_bakhlid(self):
         return self.bakhlid
 
 
 class Geymsla:
 
+    #Móðurklasi fyrir geymsluaðferðir okkar. Stokkur og Bunki erfa fá þessum klasa.
+
     def tomur(self):
         return len(self.spil_i_lista)==0
 
+    #draugur er nokkurskonar placeholder þ.e ef búnkinn er tómur þá setjum við "bull spil" í búnkann
+    #til að hann sjáist og fólk viti hvar hann er.
     def setja_draug(self):
         if self.tomur():
             self.setja_a(Spil('Auka',1,True))
@@ -93,6 +106,7 @@ class Geymsla:
     def draugur_lifandi(self):
         return self.draugur
 
+    #setur spil á stokkinn eða bunkann. getur tekið við lista eða stöku spili.
     def setja_a(self, spil):
         if spil:
             if type(spil)==list:
@@ -100,6 +114,7 @@ class Geymsla:
             else:
                 self.spil_i_lista.append(spil)
 
+    #fall til að færa stokkinn eða bunkann
     def flytja(self, hnit):
         self.stadsetning = hnit
 
@@ -107,7 +122,8 @@ class Geymsla:
         if not self.tomur():
             return self.spil_i_lista[-1]
 
-    def breyta_bakhlid_spila(self, numer=1, mynd=False):
+    #fall sem breytir baklið allra spilanna í tilteknum stokk eða bunka
+    def breyta_bakhlid_spila(self,numer=1,mynd=False):
         if not self.draugur_lifandi():
             for i in self.spil_i_lista:
                 i.breyta_bakhlid(numer,mynd)
@@ -115,15 +131,21 @@ class Geymsla:
 
 class Stokkur(Geymsla):
 
+    #geymir spilin í bunka með engu offsetti þ.e hvert spil er ofan á hvort öðru og
+    #þú sérð ekki spilið undir. Tekur við x og y hnitum til að gefa honum staðsetningu.
+    #hann erfir frá Geymsla klasanum.
+
     def __init__(self, xHnit, yHnit):
         self.stadsetning = (xHnit, yHnit)
         self.spil_i_lista = []
         self.draugur = False
 
+    #skilar efsta spilinu í stokknum
     def taka_af(self, spil):
         if not self.tomur():
             return [self.spil_i_lista.pop()]
 
+    #teiknar bunkann
     def teikna(self, skjar, mynd):
         if not self.tomur():
             efst = self.spil_i_lista[-1]
@@ -135,6 +157,9 @@ class Stokkur(Geymsla):
                 kassi = pg.Rect(self.stadsetning[0], self.stadsetning[1],efst.breidd(), efst.haed())
                 skjar.blit(mynd, kassi, (hnit[1], hnit[0], efst.breidd(), efst.haed()))
 
+
+    #tekur við hnitum og athugar hvort þau séu innan stokksins eða ekki. Ef svo er þá sklar það
+    #efsta spilun annars ekkert.
     def athuga(self,hnit):
         if not self.tomur():
             efst = self.spil_i_lista[-1]
@@ -148,12 +173,15 @@ class Stokkur(Geymsla):
 
 class Bunki(Geymsla):
 
+    #Geymi spilin í bunka með offsetti, þ.e þú sérð öll spilin í bunkanum. tekur við x og y hnitum
+    #til að gefa honum staðsetningu. hann erfir fá Geymsla klasanum.
     def __init__(self, xhnit, yhnit):
         self.stadsetning = (xhnit, yhnit)
         self.spil_i_lista = []
         self.skekkja = 12
         self.draugur = False
 
+    #tekur við spili. skilar lista af spilum með spil viðfaningu og öllum spilum fyrir neðan.
     def taka_af(self, spil):
         if spil:
             hvar = self.spil_i_lista.index(spil)
@@ -161,6 +189,7 @@ class Bunki(Geymsla):
             self.spil_i_lista = self.spil_i_lista[:hvar]
             return losun
 
+    #teiknar stokkinn
     def teikna(self, skjar, mynd):
         if not self.tomur():
             yhnit = self.stadsetning[1]
@@ -169,13 +198,13 @@ class Bunki(Geymsla):
                     kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
                     yhnit += self.skekkja + (18-len(self.spil_i_lista))
                     skjar.blit(i.fa_bakhlid(),kassi)
-
                 else:
                     kassi = pg.Rect(self.stadsetning[0], yhnit , i.breidd(), i.haed())
                     yhnit += self.skekkja + (18-len(self.spil_i_lista))
                     hnit = i.fa_spil()
                     skjar.blit(mynd,kassi,(hnit[1], hnit[0], i.breidd(), i.haed()))
 
+    #tekur við hniti, athugar hvort músin sé að ýta á eitthvað spil í bunkanum og skilar því spili sem ýtt er á
     def athuga(self,hnit):
         if not self.tomur():
             yhnit = self.stadsetning[1] + ((len(self.spil_i_lista)-1) * (self.skekkja + (18-len(self.spil_i_lista))))
@@ -186,6 +215,7 @@ class Bunki(Geymsla):
                 if kassi.collidepoint(hnit):
                     return i
         return False
+
 
     def skila_aftasta(self):
         if not self.tomur():
@@ -202,6 +232,8 @@ class Bunki(Geymsla):
 
 
 class Reglur:
+
+    #Heldur utanum reglur leiksins og athugar hvort músin sé að klikka á eitthvað
 
     def __init__(self):
         self.stig = 0
@@ -248,6 +280,7 @@ class Reglur:
         if geymsla in self.stokkar[2:]:
             self.sigur_stokkar(geymsla)
 
+    #passar hvort allt fari rétt fram með stokkanna sem þú raðar á til að vinna
     def sigur_stokkar(self, geymsla):
         spil = self.hond.skila_aftasta().skila_spili()
         if geymsla.draugur_lifandi() and spil[1] == 1:
@@ -260,6 +293,7 @@ class Reglur:
                 self.breyta_stigum(10)
         self.leikur_buinn()
 
+    #athugar hvort leikurinn sé búinn
     def leikur_buinn(self):
         for i in self.stokkar[2:]:
             if i.draugur_lifandi():
@@ -274,6 +308,7 @@ class Reglur:
         else:
             return 'Svart'
 
+    #flettir úr aðal stokknum í hinn
     def fletta_stokk(self):
         if not self.stokkar[0].draugur_lifandi():
             if self.stokkar[1].draugur_lifandi():
@@ -323,6 +358,9 @@ class Reglur:
 
 class Vidmot:
 
+
+    #sér um að teikna takkana og það sem þeim fylgir.
+
     def __init__(self):
         self.tafla = pg.Surface((200,300))
         self.valmynd = pg.Surface((300,500))
@@ -338,7 +376,7 @@ class Vidmot:
         staerd = plat_spil.breidd(),plat_spil.haed()
         self.myndir_a_bakhlid = []
         self.kassar_bakhlida = []
-        for i in range(4):
+        for i in range(9):
             x = i - 3*int(i/3.0)
             y = int(i/3.0)
             hnit = plat_spil.fa_mitt_spil('Auka',i+2)
@@ -424,6 +462,8 @@ class Vidmot:
 
 
 class Leikur(Reglur,Vidmot):
+
+    #heldur utan um gang leiksins.
 
     def __init__(self):
         self.undirbua()
