@@ -453,11 +453,12 @@ class Vidmot:
     def myndavel(self):
         pygame.camera.init()
         cam = pygame.camera.Camera(pygame.camera.list_cameras()[0])
-        cam.start()
-        img = cam.get_image()
-        img = pg.transform.scale(img,(71,96))
-        pygame.image.save(img, "photo.bmp")
-        cam.stop()
+        if not cam is None:
+            cam.start()
+            img = cam.get_image()
+            img = pg.transform.scale(img,(71,96))
+            pygame.image.save(img, "photo.bmp")
+            cam.stop()
         self.velja_mynd(mynd="photo.bmp")
 
 
