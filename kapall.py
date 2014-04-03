@@ -301,6 +301,9 @@ class Reglur:
             if not i.skila_fremsta().skila_spili()[1] == 13:
                 return
         self.vista_stig_og_tima()
+        self.leikir[1] += 1
+        self.vista_leiki()
+
 
     def litur(self,sort):
         if sort == 'Hjarta' or sort == 'Tigull':
@@ -478,11 +481,22 @@ class Leikur(Reglur,Vidmot):
         pg.display.set_caption('awesome-souce')
         self.spilandi = True
         self.lesa_stig()
+        self.saekja_leiki()
         self.klukka = pg.time.Clock()
         self.gluggi = pg.display.set_mode((800,500))
         self.gluggi.fill((0,0,0))
         self.mynd = pg.image.load('Spil.png').convert_alpha()
         self.utbytta_spilum()
+
+    def saekja_leiki(self):
+        try:
+            self.leikir = pickle.load(open('leikir.p','rb'))
+        except:
+            self.leikir = [0,1];
+            pickle.dump(self.leikir,open('leikir.p', 'wb'))
+
+    def vista_leiki(self):
+        pickle.dump(self.leikir,open('leikir.p', 'wb'))
 
     def lesa_stig(self):
         try:
@@ -556,12 +570,8 @@ class Leikur(Reglur,Vidmot):
                 atburdur.key == pg.K_ESCAPE or
                 atburdur.type == pg.QUIT):
                     self.spilandi = False
-            if (atburdur.type == pg.KEYDOWN and
-                atburdur.key == pg.K_p):
-                for i in self.stokkar:
-                    i.breyta_bakhlid_spila(0,'bakhlid.png')
-                for i in self.bunkar:
-                    i.breyta_bakhlid_spila(0,'bakhlid.png')
+                    self.leikir[1] += 1
+                    self.vista_leiki()
 
     def taka_tima(self):
         self.klukka.tick(200)
@@ -570,6 +580,11 @@ class Leikur(Reglur,Vidmot):
         skilti = self.stafir.render(timi[0], 0, (255,255,255))
         self.gluggi.blit(skilti, (700,450))
 
+    def teikna_hlutfall(self):
+        hlutfall = int((float(self.leikir[0])/self.leikir[1]) * 100)
+        skilti = self.stafir.render(str(self.leikir[0])+"/"+str(self.leikir[1])+"="+str(hlutfall)+"%", 0, (255,255,255))
+        self.gluggi.blit(skilti, (600,450))
+   
     def teikna_bakgrunn(self):
         self.gluggi.fill((0,150,0))
 
@@ -579,6 +594,7 @@ class Leikur(Reglur,Vidmot):
             self.teikna_stokka()
             self.samskipti()
             self.taka_tima()
+            self.teikna_hlutfall() 
             self.teikna_stig(self.gluggi,self.stafir)
             pg.display.flip()
 
