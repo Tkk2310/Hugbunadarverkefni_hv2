@@ -18,10 +18,11 @@ class Spil:
         self.sort = sort
         self.gildi = gildi
         self.snyr_upp = snyr
+        self.hvada_mynd = 2
         self.spila_breidd = 71 #beriedd spilanna í pixlum
         self.spila_haed = 96 #hæð spilanna í pxlum
         self.heimili = False #geymir bunkann sem spilið tilheyrir
-        self.bakhlid = self.fa_mitt_spil('Auka', 2) #vísir á bakhlið spilins í spil.png myndinni
+        self.bakhlid = self.fa_mitt_spil('Auka', self.hvada_mynd) #vísir á bakhlið spilins í spil.png myndinni
         self.framhlid = self.fa_mitt_spil(self.sort, self.gildi) #vísir á framhlið spilins í spil.png myndinni
         self.er_med_mynd = False #flag sem segir til um hvort bakliðin sé png mynd eða tupul(vísir á bakliðina)
 
@@ -459,6 +460,7 @@ class Vidmot:
             for i in self.kassar_bakhlida:
                 if i[0].collidepoint((mus[0]-100,mus[1])):
                     self.velja_mynd(i[1])
+                    self.vista_visi_a_mynd(i[1])
 
     def myndavel(self):
         try:
@@ -473,6 +475,7 @@ class Vidmot:
             pygame.image.save(img, "photo.bmp")
             cam.stop()
             self.velja_mynd(mynd="photo.bmp")
+            self.vista_visi_a_mynd('photo')
 
 
 class Leikur(Reglur,Vidmot):
@@ -497,6 +500,9 @@ class Leikur(Reglur,Vidmot):
         self.gluggi.fill((0,0,0))
         self.mynd = pg.image.load('Spil.png').convert_alpha()
         self.utbytta_spilum()
+        self.saekja_mynd()
+        self.breyta_mynd()
+
 
     def saekja_leiki(self):
         try:
@@ -521,6 +527,26 @@ class Leikur(Reglur,Vidmot):
             pickle.dump(self.leikir,open('leikir.p', 'wb'))
             self.sigurvegarar = []
             pickle.dump(self.sigurvegarar,open('siggar.p','wb'))
+
+    def saekja_mynd(self):
+        try:
+            self.bakhlid = pickle.load(open('mynd.p','rb'))
+        except:
+            self.bakhlid = [2]
+            pickle.dump(self.bakhlid,open('mynd.p','wb'))
+
+    def vista_mynd(self):
+        pickle.dump(self.bakhlid,open('mynd.p','wb'))
+
+    def vista_visi_a_mynd(self, visir):
+        self.bakhlid = [visir]
+
+
+    def breyta_mynd(self):
+        for i in self.stokkar:
+            i.breyta_bakhlid_spila(self.bakhlid[0])
+        for i in self.bunkar:
+            i.breyta_bakhlid_spila(self.bakhlid[0])
 
     def vista_stig_og_tima(self):
         timi = str(dt.timedelta(milliseconds=pg.time.get_ticks()))
@@ -591,6 +617,7 @@ class Leikur(Reglur,Vidmot):
                     self.spilandi = False
                     self.leikir[1] += 1
                     self.vista_leiki()
+                    self.vista_mynd()
 
     def taka_tima(self):
         self.klukka.tick(200)
