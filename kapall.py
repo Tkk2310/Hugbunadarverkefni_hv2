@@ -529,10 +529,16 @@ class Leikur(Reglur,Vidmot):
 
 
     def breyta_mynd(self):
-        for i in self.stokkar:
-            i.breyta_bakhlid_spila(self.bakhlid[0])
-        for i in self.bunkar:
-            i.breyta_bakhlid_spila(self.bakhlid[0])
+        if type(self.bakhlid[0]) == str:
+            for i in self.stokkar:
+                i.breyta_bakhlid_spila(self.bakhlid[0])
+            for i in self.bunkar:
+                i.breyta_bakhlid_spila(self.bakhlid[0])
+        else:
+            for i in self.stokkar:
+                i.breyta_bakhlid_spila(self.bakhlid[0])
+            for i in self.bunkar:
+                i.breyta_bakhlid_spila(self.bakhlid[0])
 
     def hreinsa_upplysingar(self):
         self.leikir = []
