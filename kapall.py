@@ -472,10 +472,10 @@ class Vidmot:
             cam.start()
             img = cam.get_image()
             img = pg.transform.scale(img,(71,96))
-            pygame.image.save(img, "photo.bmp")
+            pygame.image.save(img, 'photo.bmp')
             cam.stop()
-            self.velja_mynd(mynd="photo.bmp")
-            self.vista_visi_a_mynd('photo')
+            self.velja_mynd(mynd='photo.bmp')
+            self.vista_visi_a_mynd('photo.bmp')
 
 
 class Leikur(Reglur,Vidmot):
