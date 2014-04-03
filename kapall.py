@@ -508,6 +508,12 @@ class Leikur(Reglur,Vidmot):
             self.sigurvegarar = [];
             pickle.dump(self.sigurvegarar,open('siggar.p','wb'))
 
+    def hreynsa_upplysingar(self):
+        this.leikir = []
+        pickle.dump(self.leikir,open('leikir.p', 'wb'))
+        this.sigurvegarar = []
+        pickle.dump(self.sigurvegarar,open('siggar.p','wb'))
+
     def vista_stig_og_tima(self):
         timi = str(dt.timedelta(milliseconds=pg.time.get_ticks()))
         timi = timi.split('.')
