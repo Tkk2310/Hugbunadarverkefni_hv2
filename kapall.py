@@ -394,15 +394,19 @@ class Vidmot:
         self.sm = pg.image.load('stig.png').convert_alpha()
         self.rm = pg.image.load('smerki.png').convert_alpha()
         self.vm = pg.image.load('smerki.png').convert_alpha()
+        self.hm = pg.image.load('smerki.png').convert_alpha()
         self.sm_kassi = self.sm.get_rect()
         self.rm_kassi = self.rm.get_rect()
         self.vm_kassi = self.vm.get_rect()
+        self.hm_kassi = self.vm.get_rect()
         self.sm_kassi.x = 20
         self.sm_kassi.y = 460
         self.rm_kassi.x = 60
         self.rm_kassi.y = 460
         self.vm_kassi.x = 100
         self.vm_kassi.y = 460
+        self.hm_kassi.x = 140
+        self.hm_kassi.y = 460
 
     def sja_stig(self,mus):
         self.gluggi.blit(self.sm,self.sm_kassi)
@@ -414,6 +418,9 @@ class Vidmot:
         self.gluggi.blit(self.rm,self.rm_kassi)
         if self.rm_kassi.collidepoint(mus):
             self.teikna_reglur()
+
+    def sja_hreinsa(self):
+        self.gluggi.blit(self.hm,self.hm_kassi)
 
     def teikna_stigatoflu(self):
         skilti = self.stafir.render('Sigurvegarar',0,(0,255,255))
@@ -514,6 +521,13 @@ class Leikur(Reglur,Vidmot):
             self.sigurvegarar = [];
             pickle.dump(self.sigurvegarar,open('siggar.p','wb'))
 
+    def hreinsa_upplysingar(self,mus):
+        if self.hm_kassi.collidepoint(mus):
+            self.leikir = [0,1]
+            pickle.dump(self.leikir,open('leikir.p', 'wb'))
+            self.sigurvegarar = []
+            pickle.dump(self.sigurvegarar,open('siggar.p','wb'))
+
     def saekja_mynd(self):
         try:
             self.bakhlid = pickle.load(open('mynd.p','rb'))
@@ -539,12 +553,6 @@ class Leikur(Reglur,Vidmot):
                 i.breyta_bakhlid_spila(self.bakhlid[0])
             for i in self.bunkar:
                 i.breyta_bakhlid_spila(self.bakhlid[0])
-
-    def hreinsa_upplysingar(self):
-        self.leikir = []
-        pickle.dump(self.leikir,open('leikir.p', 'wb'))
-        self.sigurvegarar = []
-        pickle.dump(self.sigurvegarar,open('siggar.p','wb'))
 
     def vista_stig_og_tima(self):
         timi = str(dt.timedelta(milliseconds=pg.time.get_ticks()))
@@ -599,12 +607,14 @@ class Leikur(Reglur,Vidmot):
         mus = pg.mouse.get_pos()
         self.sja_stig(mus)
         self.sja_reglur(mus)
+        self.sja_hreinsa()
         self.sja_valglugga(mus)
         for atburdur in pg.event.get():
             if atburdur.type == pg.MOUSEBUTTONDOWN:
                 if self.valmynd_uppi:
                     self.klikka_a_mynd(mus)
                 else:
+                    self.hreinsa_upplysingar(mus)
                     self.klikka_a_spil(mus)
             self.hond.flytja((mus[0]-36,mus[1]-10))
             if (atburdur.type == pg.KEYDOWN and
