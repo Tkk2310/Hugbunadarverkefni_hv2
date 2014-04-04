@@ -541,7 +541,6 @@ class Leikur(Reglur,Vidmot):
     def vista_visi_a_mynd(self, visir):
         self.bakhlid = [visir]
 
-
     def breyta_mynd(self):
         if type(self.bakhlid[0]) == str:
             self.velja_mynd(mynd=self.bakhlid[0])
