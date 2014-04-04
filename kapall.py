@@ -394,7 +394,7 @@ class Vidmot:
         self.sm = pg.image.load('stigatafla.png').convert_alpha()
         self.rm = pg.image.load('regluIcon.png').convert_alpha()
         self.vm = pg.image.load('bakgrunnur.png').convert_alpha()
-        self.hm = pg.image.load('smerki.png').convert_alpha()
+        self.hm = pg.image.load('Hreinsa.png').convert_alpha()
         self.em = pg.image.load('restart.png').convert_alpha()
         self.sm_kassi = self.sm.get_rect()
         self.rm_kassi = self.rm.get_rect()
