@@ -513,7 +513,6 @@ class Leikur(Reglur,Vidmot):
         self.saekja_mynd()
         self.breyta_mynd()
 
-
     def saekja_leiki(self):
         try:
             self.leikir = pickle.load(open('leikir.p','rb'))
