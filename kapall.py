@@ -391,14 +391,16 @@ class Vidmot:
 
     def stadsetja_takka(self):
         self.vh = (100,120,460,480)
-        self.sm = pg.image.load('stig.png').convert_alpha()
-        self.rm = pg.image.load('smerki.png').convert_alpha()
-        self.vm = pg.image.load('smerki.png').convert_alpha()
+        self.sm = pg.image.load('stigatafla.png').convert_alpha()
+        self.rm = pg.image.load('regluIcon.png').convert_alpha()
+        self.vm = pg.image.load('bakgrunnur.png').convert_alpha()
         self.hm = pg.image.load('smerki.png').convert_alpha()
+        self.em = pg.image.load('restart.png').convert_alpha()
         self.sm_kassi = self.sm.get_rect()
         self.rm_kassi = self.rm.get_rect()
         self.vm_kassi = self.vm.get_rect()
         self.hm_kassi = self.vm.get_rect()
+        self.em_kassi = self.em.get_rect()
         self.sm_kassi.x = 20
         self.sm_kassi.y = 460
         self.rm_kassi.x = 60
@@ -407,6 +409,9 @@ class Vidmot:
         self.vm_kassi.y = 460
         self.hm_kassi.x = 140
         self.hm_kassi.y = 460
+        self.em_kassi.x = 180
+        self.em_kassi.y = 460
+
 
     def sja_stig(self,mus):
         self.gluggi.blit(self.sm,self.sm_kassi)
@@ -421,6 +426,9 @@ class Vidmot:
 
     def sja_hreinsa(self):
         self.gluggi.blit(self.hm,self.hm_kassi)
+
+    def sja_endurraesa(self):
+        self.gluggi.blit(self.em,self.em_kassi)
 
     def teikna_stigatoflu(self):
         skilti = self.stafir.render('Sigurvegarar',0,(0,255,255))
@@ -528,6 +536,11 @@ class Leikur(Reglur,Vidmot):
             self.sigurvegarar = []
             pickle.dump(self.sigurvegarar,open('siggar.p','wb'))
 
+    def endurraesa(self, mus):
+        if self.em_kassi.collidepoint(mus):
+            pg.init()
+            self.__init__()
+
     def saekja_mynd(self):
         try:
             self.bakhlid = pickle.load(open('mynd.p','rb'))
@@ -600,6 +613,7 @@ class Leikur(Reglur,Vidmot):
         mus = pg.mouse.get_pos()
         self.sja_stig(mus)
         self.sja_reglur(mus)
+        self.sja_endurraesa()
         self.sja_hreinsa()
         self.sja_valglugga(mus)
         for atburdur in pg.event.get():
@@ -608,6 +622,7 @@ class Leikur(Reglur,Vidmot):
                     self.klikka_a_mynd(mus)
                 else:
                     self.hreinsa_upplysingar(mus)
+                    self.endurraesa(mus)
                     self.klikka_a_spil(mus)
             self.hond.flytja((mus[0]-36,mus[1]-10))
             if (atburdur.type == pg.KEYDOWN and
