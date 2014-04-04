@@ -358,7 +358,7 @@ class Reglur:
 
     def teikna_stig(self,skjar,stafir):
         skilti = stafir.render('Stig = '+str(self.stig),0,(255,255,255))
-        skjar.blit(skilti,(500,450))
+        skjar.blit(skilti,(400,460))
 
 class Vidmot:
 
@@ -505,7 +505,7 @@ class Leikur(Reglur,Vidmot):
         self.saekja_leiki()
         self.klukka = pg.time.Clock()
         self.nuna = pg.time.get_ticks()
-        self.gluggi = pg.display.set_mode((800,500))
+        self.gluggi = pg.display.set_mode((700,500))
         self.gluggi.fill((0,0,0))
         self.mynd = pg.image.load('Spil.png').convert_alpha()
         self.utbytta_spilum()
@@ -640,12 +640,12 @@ class Leikur(Reglur,Vidmot):
         timi = str(dt.timedelta(milliseconds=pg.time.get_ticks()-self.nuna))
         timi = timi.split('.')
         skilti = self.stafir.render(timi[0], 0, (255,255,255))
-        self.gluggi.blit(skilti, (700,450))
+        self.gluggi.blit(skilti, (600,460))
 
     def teikna_hlutfall(self):
         hlutfall = int((float(self.leikir[0])/self.leikir[1]) * 100)
         skilti = self.stafir.render(str(self.leikir[0])+"/"+str(self.leikir[1])+"="+str(hlutfall)+"%", 0, (255,255,255))
-        self.gluggi.blit(skilti, (600,450))
+        self.gluggi.blit(skilti, (500,460))
 
     def teikna_bakgrunn(self):
         self.gluggi.fill((0,150,0))
