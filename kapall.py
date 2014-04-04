@@ -429,7 +429,9 @@ class Vidmot:
     def sja_endurraesa(self):
         self.gluggi.blit(self.em,self.em_kassi)
 
-    def teikna_stigatoflu(self):
+    def teikna_stigatoflu(self, fix=False):
+        if fix:
+            Vidmot.__init__(self)
         skilti = self.stafir.render('Sigurvegarar',0,(0,255,255))
         self.tafla.blit(skilti,(60,20))
         for i in sorted(self.sigurvegarar,key=(lambda x: x[0])):
@@ -535,6 +537,7 @@ class Leikur(Reglur,Vidmot):
             pickle.dump(self.leikir,open('leikir.p', 'wb'))
             self.sigurvegarar = []
             pickle.dump(self.sigurvegarar,open('siggar.p','wb'))
+            self.teikna_stigatoflu(fix=True)
 
     def endurraesa(self, mus):
         if self.em_kassi.collidepoint(mus):
@@ -578,7 +581,7 @@ class Leikur(Reglur,Vidmot):
 
     def utbytta_spilum(self):
         spil = [Spil(tegund,numer, False) for tegund in ['Hjarta','Spadi','Tigull','Lauf'] for numer in range(1,14)]
-        #random.shuffle(spil)
+        random.shuffle(spil)
         self.bunkar = (
                 Bunki(10,130),
                 Bunki(110,130),
