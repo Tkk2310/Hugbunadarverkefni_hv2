@@ -498,7 +498,6 @@ class Leikur(Reglur,Vidmot):
         self.leikhringur()
 
     def undirbua(self):
-        pg.display.set_icon(pg.image.load('smerki.png'))
         pg.init()
         self.stafir = pg.font.SysFont("Arial", 17)
         pg.display.set_caption('awesome-souce')
