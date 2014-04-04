@@ -399,7 +399,7 @@ class Vidmot:
         self.sm_kassi = self.sm.get_rect()
         self.rm_kassi = self.rm.get_rect()
         self.vm_kassi = self.vm.get_rect()
-        self.hm_kassi = self.vm.get_rect()
+        self.hm_kassi = self.hm.get_rect()
         self.em_kassi = self.em.get_rect()
         self.sm_kassi.x = 20
         self.sm_kassi.y = 460
@@ -504,6 +504,7 @@ class Leikur(Reglur,Vidmot):
         self.lesa_stig()
         self.saekja_leiki()
         self.klukka = pg.time.Clock()
+        self.nuna = pg.time.get_ticks()
         self.gluggi = pg.display.set_mode((800,500))
         self.gluggi.fill((0,0,0))
         self.mynd = pg.image.load('Spil.png').convert_alpha()
@@ -538,7 +539,8 @@ class Leikur(Reglur,Vidmot):
 
     def endurraesa(self, mus):
         if self.em_kassi.collidepoint(mus):
-            pg.init()
+            self.leikir[1] += 1
+            self.vista_leiki()
             self.__init__()
 
     def saekja_mynd(self):
@@ -635,7 +637,7 @@ class Leikur(Reglur,Vidmot):
 
     def taka_tima(self):
         self.klukka.tick(200)
-        timi = str(dt.timedelta(milliseconds=pg.time.get_ticks()))
+        timi = str(dt.timedelta(milliseconds=pg.time.get_ticks()-self.nuna))
         timi = timi.split('.')
         skilti = self.stafir.render(timi[0], 0, (255,255,255))
         self.gluggi.blit(skilti, (700,450))
