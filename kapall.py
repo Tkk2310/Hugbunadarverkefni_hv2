@@ -301,8 +301,8 @@ class Reglur:
                 return
             if not i.skila_fremsta().skila_spili()[1] == 13:
                 return
+        self.leikir[0] += 1
         self.vista_stig_og_tima()
-        self.leikir[1] += 1
         self.vista_leiki()
 
 
@@ -380,7 +380,7 @@ class Vidmot:
         staerd = plat_spil.breidd(),plat_spil.haed()
         self.myndir_a_bakhlid = []
         self.kassar_bakhlida = []
-        for i in range(9):
+        for i in range(12):
             x = i - 3*int(i/3.0)
             y = int(i/3.0)
             hnit = plat_spil.fa_mitt_spil('Auka',i+2)
@@ -411,7 +411,6 @@ class Vidmot:
         self.hm_kassi.y = 460
         self.em_kassi.x = 180
         self.em_kassi.y = 460
-
 
     def sja_stig(self,mus):
         self.gluggi.blit(self.sm,self.sm_kassi)
@@ -571,15 +570,15 @@ class Leikur(Reglur,Vidmot):
         self.sigurvegarar.sort(key=(lambda x: int(x[3])),reverse=True)
         for i in range(len(self.sigurvegarar)):
             self.sigurvegarar[i][0] = i+1
-        pickle.dump( self.sigurvegarar, open('siggar.p','wb'))
         self.leikir[1] += 1
         self.vista_leiki()
         self.vista_mynd()
+        pickle.dump( self.sigurvegarar, open('siggar.p','wb'))
         self.__init__()
 
     def utbytta_spilum(self):
         spil = [Spil(tegund,numer, False) for tegund in ['Hjarta','Spadi','Tigull','Lauf'] for numer in range(1,14)]
-        random.shuffle(spil)
+        #random.shuffle(spil)
         self.bunkar = (
                 Bunki(10,130),
                 Bunki(110,130),
