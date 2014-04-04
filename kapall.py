@@ -541,6 +541,7 @@ class Leikur(Reglur,Vidmot):
         if self.em_kassi.collidepoint(mus):
             self.leikir[1] += 1
             self.vista_leiki()
+            self.vista_mynd()
             self.__init__()
 
     def saekja_mynd(self):
@@ -571,6 +572,10 @@ class Leikur(Reglur,Vidmot):
         for i in range(len(self.sigurvegarar)):
             self.sigurvegarar[i][0] = i+1
         pickle.dump( self.sigurvegarar, open('siggar.p','wb'))
+        self.leikir[1] += 1
+        self.vista_leiki()
+        self.vista_mynd()
+        self.__init__()
 
     def utbytta_spilum(self):
         spil = [Spil(tegund,numer, False) for tegund in ['Hjarta','Spadi','Tigull','Lauf'] for numer in range(1,14)]
